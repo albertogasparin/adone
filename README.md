@@ -4,7 +4,7 @@
 [![npm bundle size (minified + gzip)](https://img.shields.io/bundlephobia/minzip/react-adone.svg)](https://bundlephobia.com/result?p=react-adone)
 [![License](https://img.shields.io/:license-mit-blue.svg)](http://albertogasparin.mit-license.org)
 [![CircleCI](https://circleci.com/gh/albertogasparin/react-adone.svg?style=shield&circle-token=17a5f372d198e27098226779bc1afd8fd6a2fb3a)](https://circleci.com/gh/albertogasparin/react-adone)
-[![Dependency Status](https://david-dm.org/albertogasparin/react-adone.svg)](https://david-dm.org/albertogasparin/react-adone)
+[![Dependency Status](https://david-dm.org/albertogasparin/react-adone.svg)](https://david-dm.org/albertogasparin/react-adone) [![Greenkeeper badge](https://badges.greenkeeper.io/albertogasparin/react-adone.svg)](https://greenkeeper.io/)
 
 Yes, this is another Redux-like/Context-alternative solution. Probably you should use more well known libs unless:
 
