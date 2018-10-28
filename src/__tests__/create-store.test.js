@@ -11,6 +11,7 @@ describe('createStore', () => {
       getState: expect.any(Function),
       setState: expect.any(Function),
       subscribe: expect.any(Function),
+      listeners: expect.any(Function),
       produce: expect.any(Function),
     });
   });

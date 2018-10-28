@@ -128,53 +128,38 @@ const App = () => (
 // defaultRegistry.setActionExtraArgument({ api: axios })
 ```
 
+#### Basket scopes
+
+By default all basket instances are stored in the global registry. However in large, complex applications you might want to have multiple instances of the same basket. That's where `YieldScope` component comes into play.
+It allows you to have multiple global instances of the same basket type in the registry (still available app-wide and SSR-compatible) or even a local only instance, only accessible to `YieldScope` children.
+
+```js
+const App = () => (
+  <YieldProvider>
+    <YieldScope for={counterBasket} id={'counter-1'}>
+      <Yield from={counterBasket}>{({ count }) => count /* this is 1 */}</Yield>
+    </YieldScope>
+
+    <YieldScope for={counterBasket} local>
+      <Yield from={counterBasket}>
+        {/* this instance cannot be accessed elsewhere */}
+        {({ count }) => count /* this is 20 */}
+      </Yield>
+    </YieldScope>
+
+    {/* but somewhere else in the app... */}
+    <YieldScope for={counterBasket} id={'counter-1'}>
+      <Yield from={counterBasket}>
+        {({ count }) => count /* this is 1 as above :) */}
+      </Yield>
+    </YieldScope>
+  </YieldProvider>
+);
+```
+
 Look at `./examples` folder for more use cases.
 
-#### Middlewares
-
-Adone supports Redux-like middlewares. They can be added via `defaults.middlewares`.
-
-```js
-import { defaults } from 'react-adone';
-
-const logger = store => next => fn => {
-  console.log('Updating', store.key);
-  const result = next(fn);
-  console.log('Changed', result.changes);
-  return result;
-};
-
-defaults.middlewares.add(logger);
-```
-
-#### Devtools
-
-If you have [Redux Devtools extension](https://github.com/zalmoxisus/redux-devtools-extension) installed, Adone action's mutators and state will be visible there.
-If you use arrow functions as mutators, the devtools will show just the action name, but if you use named functions you will get also the mutator's name (really handy when an action produces multiple mutations):
-
-```js
-const actions = {
-  increment: () => produce => {
-    // this will be logged as "increment"
-    produce(draft => {
-      draft.count += 1;
-    });
-    // this will be logged as "increment.addOne"
-    produce(function addOne(draft) {
-      draft.count += 1;
-    });
-  },
-};
-```
-
-If you want to turn devtools off (for instance on prod), just set the `defaults.devtools` to `false`:
-
-```js
-import { defaults } from 'react-adone';
-defaults.devtools = false;
-```
-
-#### Basket state rehydration
+#### Basket state rehydration (eg from SSR)
 
 If you server side render your content, you might want to rehydrate your baskets state with the correct data.
 `YieldProvider` (and `fallbackProviderState`) supports `initialStates` prop where you can define baskets initial status by key.
@@ -198,7 +183,7 @@ const App = () => (
 );
 ```
 
-## Optimisations
+## Optimisation patterns
 
 #### Basket selectors
 
@@ -297,6 +282,52 @@ const UserProject = () => (
     )}
   </Composer>
 );
+```
+
+## Configuration
+
+#### Middlewares
+
+Adone supports Redux-like middlewares. They can be added via `defaults.middlewares`.
+
+```js
+import { defaults } from 'react-adone';
+
+const logger = store => next => fn => {
+  console.log('Updating', store.key);
+  const result = next(fn);
+  console.log('Changed', result.changes);
+  return result;
+};
+
+defaults.middlewares.add(logger);
+```
+
+#### Devtools
+
+If you have [Redux Devtools extension](https://github.com/zalmoxisus/redux-devtools-extension) installed, Adone action's mutators and state will be visible there.
+If you use arrow functions as mutators, the devtools will show just the action name, but if you use named functions you will get also the mutator's name (really handy when an action produces multiple mutations):
+
+```js
+const actions = {
+  increment: () => produce => {
+    // this will be logged as "increment"
+    produce(draft => {
+      draft.count += 1;
+    });
+    // this will be logged as "increment.addOne"
+    produce(function addOne(draft) {
+      draft.count += 1;
+    });
+  },
+};
+```
+
+If you want to turn devtools off (for instance on prod), just set the `defaults.devtools` to `false`:
+
+```js
+import { defaults } from 'react-adone';
+defaults.devtools = false;
 ```
 
 ## Contributing

@@ -22,8 +22,8 @@ export default class YieldProvider extends Component {
       props.actionExtraArgument
     );
     this.state = {
-      baskets: this.registry.baskets,
-      initBasket: this.registry.initBasket,
+      globalRegistry: this.registry,
+      getBasket: this.registry.getBasket,
     };
   }
 

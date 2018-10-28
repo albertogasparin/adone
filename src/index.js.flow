@@ -43,7 +43,12 @@ export type BasketInstance<ST, AC> = {
 declare export class Registry {
   initialStates: { [key: string]: any };
   baskets: Map<string, BasketInstance<any, any>>;
-  initBasket: <ST, AC>(Basket<ST, AC>) => BasketInstance<ST, AC>;
+  initBasket: <ST, AC>(key: string, Basket<ST, AC>) => BasketInstance<ST, AC>;
+  getBasket: <ST, AC>(
+    Basket<ST, AC>,
+    scopeId: string
+  ) => BasketInstance<ST, AC>;
+  deleteBasket: <ST, AC>(Basket<ST, AC>, scopeId: string) => void;
   setActionExtraArgument: any => void;
 }
 
@@ -71,14 +76,33 @@ declare export class Yield<ST, AC, PI> extends React$Component<
   basket: BasketInstance<ST, AC>;
 }
 
+declare export class YieldScope extends React$Component<
+  | {
+      id: string,
+      for: Basket<*, *> | Basket<*, *>[],
+      local?: false,
+    }
+  | {
+      id?: string,
+      for: Basket<*, *> | Basket<*, *>[],
+      local: true,
+    },
+  {
+    globalRegistry: Registry,
+    getBasket: $PropertyType<Registry, 'getBasket'>,
+  }
+> {
+  registry: Registry;
+}
+
 declare export class YieldProvider extends React$Component<
   {
     initialStates?: {},
     actionExtraArgument?: any,
   },
   {
-    baskets: $PropertyType<Registry, 'baskets'>,
-    initBasket: $PropertyType<Registry, 'initBasket'>,
+    globalRegistry: Registry,
+    getBasket: $PropertyType<Registry, 'getBasket'>,
   }
 > {
   registry: Registry;

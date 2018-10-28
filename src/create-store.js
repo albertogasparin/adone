@@ -20,6 +20,9 @@ function createStore(key, initialState) {
         listeners = listeners.filter(fn => fn !== listener);
       };
     },
+    listeners() {
+      return listeners;
+    },
   };
   store.produce = applyMiddleware(store, defaults.middlewares);
   return store;

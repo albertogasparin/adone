@@ -3,6 +3,7 @@
 import React from 'react';
 import {
   Yield,
+  YieldScope,
   YieldProvider,
   createYield,
   type BasketAction,
@@ -120,7 +121,7 @@ Test = (
 
 // Correct
 Test = <Yield from={basket}>{({ count }) => count * 1}</Yield>;
-Test = <Yield from={basket}>{({ increment }) => increment(1)}</Yield>;
+Test = <Yield from={basket}>{({ count, increment }) => increment(1)}</Yield>;
 Test = (
   <Yield from={basket} pick={() => ({ baz: 1 })}>
     {({ baz }) => baz}
@@ -152,6 +153,11 @@ Test = (
   <TypeYield>{({ increment }) => increment()}</TypeYield>
 );
 
+Test = (
+  // $ExpectError Basket state should be read only
+  <TypeYield>{state => (state.count = 1)}</TypeYield>
+);
+
 // Correct
 Test = <TypeYield>{({ count }) => count + 0}</TypeYield>;
 Test = <TypeYield>{({ increment }) => increment(1)}</TypeYield>;
@@ -176,6 +182,36 @@ Test = (
 
 // Correct
 Test = <TypeYield>{({ increment }) => increment(1)}</TypeYield>;
+
+/**
+ * YieldScope types tests
+ */
+Test = (
+  // $ExpectError should require for
+  <YieldScope>bla</YieldScope>
+);
+
+Test = (
+  // $ExpectError should require id or local
+  <YieldScope for={basket}>bla</YieldScope>
+);
+
+// Correct
+Test = (
+  <YieldScope for={basket} id="a">
+    bla
+  </YieldScope>
+);
+Test = (
+  <YieldScope for={basket} local>
+    bla
+  </YieldScope>
+);
+Test = (
+  <YieldScope for={basket} id="a" local actionExtraArgument={{ url: '' }}>
+    bla
+  </YieldScope>
+);
 
 /**
  * YieldProvider types tests

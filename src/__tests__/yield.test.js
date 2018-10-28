@@ -8,20 +8,16 @@ import Yield from '../yield';
 import YieldProvider from '../yield-provider';
 import { defaultRegistry } from '../registry';
 
-const mockRegistry = {
-  baskets: new Map(),
-  initBasket: jest
-    .fn()
-    .mockReturnValue({ store: storeMock, actions: basketMock.actions }),
-};
-
-jest.mock('../registry', () => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation(() => mockRegistry),
-  defaultRegistry: {},
-}));
-// looks like cannot set mockRegistry inside .mock()
-Object.assign(defaultRegistry, mockRegistry);
+jest.mock('../registry', () => {
+  const mockRegistry = {
+    getBasket: jest.fn(),
+  };
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => mockRegistry),
+    defaultRegistry: mockRegistry,
+  };
+});
 
 describe('Yield', () => {
   const children = jest.fn().mockReturnValue(null);
@@ -68,27 +64,19 @@ describe('Yield', () => {
     const setup = modes[key];
     describe(key, () => {
       beforeEach(() => {
+        defaultRegistry.getBasket.mockReturnValue({
+          store: storeMock,
+          actions: basketMock.actions,
+        });
         storeMock.getState.mockReturnValue(basketMock.defaultState);
       });
 
-      afterEach(() => {
-        mockRegistry.baskets.clear();
-      });
-
-      it('should create a basket if first time', () => {
+      it('should get the basket instance from registry', () => {
         const { getShallow } = setup();
         getShallow();
-        expect(mockRegistry.initBasket).toHaveBeenCalledWith(basketMock);
-      });
-
-      it('should get the basket instance if any', () => {
-        mockRegistry.baskets.set(basketMock.key, {
-          store: storeMock,
-          actions: {},
-        });
-        const { getShallow } = setup();
-        getShallow();
-        expect(mockRegistry.initBasket).not.toHaveBeenCalled();
+        // we check defaultRegistry even when provider is used
+        // as the mock is the same
+        expect(defaultRegistry.getBasket).toHaveBeenCalledWith(basketMock);
       });
 
       it('should save basket instance locally and listen', () => {
@@ -152,7 +140,10 @@ describe('Yield', () => {
         const unsubscribeMock = jest.fn();
         storeMock.subscribe.mockReturnValue(unsubscribeMock);
         const instance = getMount().instance();
-        expect(instance.unsubscribeStore).toEqual(unsubscribeMock);
+        expect(instance.subscription).toEqual({
+          basket: instance.basket,
+          remove: unsubscribeMock,
+        });
         instance.componentWillUnmount();
         expect(unsubscribeMock).toHaveBeenCalled();
       });

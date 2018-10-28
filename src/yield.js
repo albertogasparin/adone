@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Consumer } from './context';
+import { readContext } from './context';
 import shallowEqual from './utils/shallow-equal';
 
 export default class Yield extends Component {
@@ -17,14 +17,14 @@ export default class Yield extends Component {
   };
 
   basket = null;
-  unsubscribeStore = null;
+  subscription = null;
   state = null;
 
   componentDidMount() {
     // As suggested by the async docs, we add listener after mount
     // So it won't leak if mount is interrupted or errors
     // https://reactjs.org/blog/2018/03/27/update-on-async-rendering.html
-    this.unsubscribeStore = this.basket.store.subscribe(this.onUpdate);
+    this.subscribeToUpdates();
 
     // Moreover, when async render, state could change between render and mount
     // so to ensure state is fresh we should manually call onUpdate and
@@ -33,20 +33,48 @@ export default class Yield extends Component {
     this.onUpdate();
   }
 
+  componentDidUpdate() {
+    this.subscribeToUpdates();
+  }
+
   componentWillUnmount() {
     this.basket = null;
-    if (this.unsubscribeStore) {
-      this.unsubscribeStore();
+    if (this.subscription) {
+      this.subscription.remove();
+      this.subscription = null;
     }
   }
 
-  getBasketState() {
+  getBasketState(fromContext = false) {
     const { pick, withProps } = this.props;
-    if (!this.basket) {
-      this.setBasket();
-    }
+    // We can get baskets from context ONLY during rendering phase
+    // overwise react will fallback to the default ctx value
+    this.basket = fromContext ? this.getBasketFromContext() : this.basket;
     const state = this.basket.store.getState();
     return pick ? pick(state, withProps) : state;
+  }
+
+  getBasketFromContext() {
+    const { from } = this.props;
+    // We use React context just to get the baskets registry
+    // then we rely on our internal pub/sub to get updates
+    // because context API doesn't have builtin selectors (yet).
+    const ctx = readContext();
+    return ctx.getBasket(from);
+  }
+
+  subscribeToUpdates() {
+    // in case basket has been recreated during an update (due to scope change)
+    if (this.subscription && this.subscription.basket !== this.basket) {
+      this.subscription.remove();
+      this.subscription = null;
+    }
+    if (!this.subscription) {
+      this.subscription = {
+        basket: this.basket,
+        remove: this.basket.store.subscribe(this.onUpdate),
+      };
+    }
   }
 
   onUpdate = () => {
@@ -62,29 +90,11 @@ export default class Yield extends Component {
     }
   };
 
-  setBasket() {
-    const { from } = this.props;
-    // We use React context just to get the baskets registry
-    // then we rely on our internal pub/sub to get updates
-    // because context API doesn't have builtin selectors (yet).
-    // Reading context value from owner as suggested by gaearon
-    // https://github.com/facebook/react/pull/13861#issuecomment-430356644
-    // plus a fix to make it work with enzyme shallow
-    const {
-      ReactCurrentOwner: { currentDispatcher },
-    } = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
-    const { baskets, initBasket } = currentDispatcher
-      ? currentDispatcher.readContext(Consumer)
-      : Consumer._currentValue;
-
-    this.basket = baskets.get(from.key) || initBasket(from);
-  }
-
   render() {
     // Get fresh state at every re-render, so if a parent triggers
     // a re-render before the componet subscription calls onUpdate()
     // we already serve the updated state and skip an additional render
-    this.state = this.getBasketState();
+    this.state = this.getBasketState(true);
     return this.props.children({ ...this.state, ...this.basket.actions });
   }
 }

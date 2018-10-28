@@ -4,6 +4,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import YieldProvider from '../yield-provider';
+import BasketRegistry from '../registry';
 
 describe('YieldProvider', () => {
   describe('render', () => {
@@ -14,8 +15,8 @@ describe('YieldProvider', () => {
       expect(wrapper.props()).toEqual({
         children,
         value: {
-          initBasket: expect.any(Function),
-          baskets: expect.any(Map),
+          getBasket: expect.any(Function),
+          globalRegistry: expect.any(BasketRegistry),
         },
       });
     });
@@ -28,8 +29,8 @@ describe('YieldProvider', () => {
         <YieldProvider>{children}</YieldProvider>
       ).instance();
       expect(instance.registry).toBeDefined();
-      expect(instance.state.baskets).toBe(instance.registry.baskets);
-      expect(instance.state.initBasket).toBe(instance.registry.initBasket);
+      expect(instance.state.globalRegistry).toBe(instance.registry);
+      expect(instance.state.getBasket).toBe(instance.registry.getBasket);
     });
   });
 });
