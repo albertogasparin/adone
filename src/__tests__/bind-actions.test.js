@@ -29,4 +29,14 @@ describe('bindActions', () => {
       { url: '' }
     );
   });
+
+  it('should wrap produce adding displayName to modifier', () => {
+    const myModifier = () => {};
+    const produce = jest.fn();
+    basketMock.actions.increase.mockReturnValue(prod => prod(myModifier));
+    combineMiddlewares.mockReturnValue(produce);
+    const result = bindActions(basketMock.actions, storeMock, {});
+    result.increase(1);
+    expect(myModifier.displayName).toEqual('increase.myModifier');
+  });
 });

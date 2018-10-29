@@ -16,3 +16,4 @@ examples
 # Ignore tests
 **/__tests__
 tests
+coverage

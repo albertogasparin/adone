@@ -15,7 +15,7 @@ const mockRegistry = {
 jest.mock('../registry', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => mockRegistry),
-  defaultRegistry: { getBasket: jest.fn() },
+  defaultRegistry: { getBasket: jest.fn(), deleteBasket: jest.fn() },
 }));
 
 describe('YieldScope', () => {
@@ -86,6 +86,51 @@ describe('YieldScope', () => {
         'local'
       );
       expect(defaultRegistry.getBasket).not.toHaveBeenCalled();
+    });
+
+    it('should cleanup from global on unmount if no more listeners', () => {
+      storeMock.subscribe.mockReturnValue(jest.fn());
+      storeMock.listeners.mockReturnValue([]);
+      const children = <Yield from={basketMock}>{() => null}</Yield>;
+      const wrapper = mount(
+        <YieldScope id="s1" for={basketMock}>
+          {children}
+        </YieldScope>
+      );
+      wrapper.unmount();
+      expect(defaultRegistry.deleteBasket).toHaveBeenCalledWith(
+        basketMock,
+        's1'
+      );
+    });
+
+    it('should not cleanup from global on unmount if still listeners', () => {
+      storeMock.subscribe.mockReturnValue(jest.fn());
+      storeMock.listeners.mockReturnValue([jest.fn()]);
+      const children = <Yield from={basketMock}>{() => null}</Yield>;
+      const wrapper = mount(
+        <YieldScope id="s1" for={basketMock}>
+          {children}
+        </YieldScope>
+      );
+      wrapper.unmount();
+      expect(defaultRegistry.deleteBasket).not.toHaveBeenCalled();
+    });
+
+    it('should cleanup from global on id change if no more listeners', () => {
+      storeMock.subscribe.mockReturnValue(jest.fn());
+      storeMock.listeners.mockReturnValue([]);
+      const children = <Yield from={basketMock}>{() => null}</Yield>;
+      const wrapper = mount(
+        <YieldScope id="s1" for={basketMock}>
+          {children}
+        </YieldScope>
+      );
+      wrapper.setProps({ id: 's2' });
+      expect(defaultRegistry.deleteBasket).toHaveBeenCalledWith(
+        basketMock,
+        's1'
+      );
     });
   });
 });
