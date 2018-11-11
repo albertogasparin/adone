@@ -9,13 +9,18 @@ import { defaultRegistry } from '../registry';
 import Yield from '../yield';
 
 const mockRegistry = {
+  configure: jest.fn(),
   getBasket: jest.fn(),
 };
 
 jest.mock('../registry', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => mockRegistry),
-  defaultRegistry: { getBasket: jest.fn(), deleteBasket: jest.fn() },
+  defaultRegistry: {
+    configure: jest.fn(),
+    getBasket: jest.fn(),
+    deleteBasket: jest.fn(),
+  },
 }));
 
 describe('YieldScope', () => {

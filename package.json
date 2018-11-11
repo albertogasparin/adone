@@ -1,6 +1,6 @@
 {
   "name": "react-adone",
-  "version": "2.4.0-beta.0",
+  "version": "2.4.0",
   "description": "State management for React build on top of immer and Context (optional)",
   "keywords": [
     "React",
@@ -29,6 +29,7 @@
     "lint": "eslint ./src",
     "preversion": "npm run lint -s && npm run flow -s && npm run test -s",
     "prepack": "npm run preversion -s && npm run build -s",
+    "docs": "docsify serve docs",
     "start": "webpack-dev-server"
   },
   "dependencies": {
@@ -52,8 +53,9 @@
     "babel-eslint": "~10.0.1",
     "babel-jest": "~23.6.0",
     "babel-loader": "~8.0.4",
+    "docsify-cli": "~4.3.0",
     "enzyme": "~3.7.0",
-    "enzyme-adapter-react-16": "~1.6.0",
+    "enzyme-adapter-react-16": "~1.7.0",
     "eslint": "~5.7.0",
     "eslint-plugin-flowtype": "~3.1.0",
     "eslint-plugin-import": "~2.14.0",
@@ -61,7 +63,7 @@
     "flow-bin": "~0.84.0",
     "flow-copy-source": "~2.0.2",
     "jest": "~23.6.0",
-    "prettier": "~1.14.3",
+    "prettier": "~1.15.0",
     "prop-types": "~15.6.2",
     "react": "~16.5.2",
     "react-dom": "~16.5.2",

@@ -29,7 +29,10 @@ export default class YieldScope extends Component {
       ctx.globalRegistry.actionExtraArgument,
       props.actionExtraArgument
     );
-    this.registry = new BasketRegistry({}, extraArg);
+    this.registry = new BasketRegistry();
+    this.registry.configure({
+      actionExtraArgument: extraArg,
+    });
 
     this.state = {
       globalRegistry: ctx.globalRegistry,

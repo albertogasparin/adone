@@ -10,6 +10,7 @@ import { defaultRegistry } from '../registry';
 
 jest.mock('../registry', () => {
   const mockRegistry = {
+    configure: jest.fn(),
     getBasket: jest.fn(),
   };
   return {

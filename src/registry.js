@@ -4,9 +4,11 @@ import createStore from './create-store';
 export const GLOBAL_SCOPE = '@@GLOBAL';
 
 export default class BasketRegistry {
-  constructor(initialStates = {}, actionExtraArgument = {}) {
+  baskets = new Map();
+  initialStates = {};
+
+  configure({ initialStates = {}, actionExtraArgument = {} }) {
     this.initialStates = initialStates;
-    this.baskets = new Map();
     this.actionExtraArgument = actionExtraArgument;
   }
 
@@ -33,10 +35,6 @@ export default class BasketRegistry {
 
   generateKey(basket, scopeId) {
     return basket.key + (scopeId === GLOBAL_SCOPE ? '' : `#${scopeId}`);
-  }
-
-  setActionExtraArgument(actionExtraArgument) {
-    this.actionExtraArgument = actionExtraArgument;
   }
 }
 

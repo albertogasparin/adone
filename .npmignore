@@ -12,6 +12,7 @@ src
 
 # Ignore examples
 examples
+docs
 
 # Ignore tests
 **/__tests__

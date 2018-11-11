@@ -17,10 +17,11 @@ export default class YieldProvider extends Component {
 
   constructor(props) {
     super(props);
-    this.registry = new BasketRegistry(
-      props.initialStates,
-      props.actionExtraArgument
-    );
+    this.registry = new BasketRegistry();
+    this.registry.configure({
+      initialStates: props.initialStates,
+      actionExtraArgument: props.actionExtraArgument,
+    });
     this.state = {
       globalRegistry: this.registry,
       getBasket: this.registry.getBasket,

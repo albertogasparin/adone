@@ -41,7 +41,10 @@ export type BasketInstance<ST, AC> = {
 };
 
 declare export class Registry {
-  initialStates: { [key: string]: any };
+  configure: ({
+    initialStates: { [key: string]: Object },
+    actionExtraArgument: any,
+  }) => void;
   baskets: Map<string, BasketInstance<any, any>>;
   initBasket: <ST, AC>(key: string, Basket<ST, AC>) => BasketInstance<ST, AC>;
   getBasket: <ST, AC>(
@@ -49,7 +52,6 @@ declare export class Registry {
     scopeId: string
   ) => BasketInstance<ST, AC>;
   deleteBasket: <ST, AC>(Basket<ST, AC>, scopeId: string) => void;
-  setActionExtraArgument: any => void;
 }
 
 declare export var defaultRegistry: Registry;

@@ -32,7 +32,8 @@ describe('BasketRegistry', () => {
 
   it('should get and create a new basket with initial data', () => {
     const data = { [basketMock.key]: { count: 1 } };
-    const registry = new BasketRegistry(data);
+    const registry = new BasketRegistry();
+    registry.configure({ initialStates: data });
     const instance = registry.getBasket(basketMock);
     expect(instance.store.getState()).toEqual({ count: 1 });
   });
