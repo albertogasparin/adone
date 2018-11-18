@@ -8,21 +8,21 @@ const USERS: UserModel[] = [
   { id: '2', name: 'Paul' },
 ];
 
-export const load = (): BasketAction<State> => async (produce, getState) => {
+export const load = (): BasketAction<State> => async (setState, getState) => {
   if (getState().loading) return;
-  produce(function setLoading(draft) {
-    draft.loading = true;
+  setState({
+    loading: true,
   });
   // simulate async call
   await new Promise(r => setTimeout(r, 1000));
-  produce(function setData(draft) {
-    draft.loading = false;
-    draft.data = USERS;
+  setState({
+    loading: false,
+    data: USERS,
   });
 };
 
-export const select = (uid: string): BasketAction<State> => produce => {
-  produce(draft => {
-    draft.selected = uid;
+export const select = (uid: string): BasketAction<State> => setState => {
+  setState({
+    selected: uid,
   });
 };

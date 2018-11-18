@@ -9,7 +9,7 @@ import type { Node } from 'react';
  * AC: Basket actions
  */
 
-type Produce<ST> = (modifier: (ST) => ST | void) => void;
+type SetState<ST> = ($Shape<ST>) => void;
 type GetState<ST> = () => $ReadOnly<ST>;
 type BasketStoreUnsubscribe = () => void;
 
@@ -26,11 +26,11 @@ export type BasketStore<ST> = {|
   setState: ST => void,
   key: string,
   subscribe: (listener: () => void) => BasketStoreUnsubscribe,
-  produce: Produce<ST>,
+  mutator: SetState<ST>,
 |};
 
 export type BasketAction<ST, EX = *> = (
-  produce: Produce<ST>,
+  setState: SetState<ST>,
   getState: GetState<ST>,
   extraArg: EX
 ) => *;
@@ -110,7 +110,7 @@ declare export class YieldProvider extends React$Component<
   registry: Registry;
 }
 
-type MiddlewareResult = { changes: any[] };
+type MiddlewareResult = any;
 export type Middleware = (
   store: BasketStore<any>
 ) => (next: (fn: any) => MiddlewareResult) => (fn: () => *) => MiddlewareResult;
@@ -118,6 +118,7 @@ export type Middleware = (
 declare export var defaults: {
   devtools: boolean,
   middlewares: Set<Middleware>,
+  mutator: <ST>(prevState: ST, partialState: *) => ST,
 };
 
 declare export function createYield<ST, AC>(

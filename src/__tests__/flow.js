@@ -21,25 +21,24 @@ let TypeYield;
 let basket: Basket<State, typeof actions>;
 
 const actions = {
-  // Produce tests
-  increment: (n: number): BasketAction<State> => produce => {
-    // $ExpectError Produce should return state or undefined
-    produce(() => '');
+  // setState tests
+  increment: (n: number): BasketAction<State> => setState => {
+    // $ExpectError setState should be of type State
+    setState('');
 
-    produce(draft => {
-      // $ExpectError Draft should be of type State
-      draft.foo = 1;
+    // $ExpectError Partial state should be of type State
+    setState({
+      foo: 1,
     });
 
     // correct
-    produce(draft => {
-      draft.count = 2;
+    setState({
+      count: 2,
     });
-    produce(() => ({ count: 0 }));
   },
 
   // GetState tests
-  decrement: (): BasketAction<State> => (produce, getState) => {
+  decrement: (): BasketAction<State> => (setState, getState) => {
     const state = getState();
     // $ExpectError State should be of type State
     const bla = state.bla;
@@ -52,7 +51,7 @@ const actions = {
 
   // actionExtraArgument tests
   double: (): BasketAction<State, ExtraArg> => (
-    produce,
+    setState,
     getState,
     extraArg
   ) => {

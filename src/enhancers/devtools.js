@@ -17,21 +17,21 @@ const withDevtools = createStore => (...args) => {
   const store = createStore(...args);
 
   if (defaults.devtools && window && window.__REDUX_DEVTOOLS_EXTENSION__) {
-    const origProduce = store.produce;
+    const origMutator = store.mutator;
     let devTools;
-    const produce = fn => {
-      const result = origProduce(fn);
+    const devtoolMutator = arg => {
+      const result = origMutator(arg);
       try {
         if (!devTools) {
           devTools = connectDevTools(store);
         }
-        devTools.send(fn.displayName, store.getState(), {}, store.key);
+        devTools.send(store.mutator._action, store.getState(), {}, store.key);
       } catch (err) {
         /* ignore devtools errors */
       }
       return result;
     };
-    store.produce = produce;
+    store.mutator = devtoolMutator;
   }
 
   return store;

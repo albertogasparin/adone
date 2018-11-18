@@ -15,21 +15,21 @@ const defaultState: State = {
 };
 
 const actions = {
-  input: (value: string): BasketAction<State> => produce => {
-    produce(draft => {
-      draft.message = value;
-      draft.isValid = value.length > 0;
+  input: (value: string): BasketAction<State> => setState => {
+    setState({
+      message: value,
+      isValid: value.length > 0,
     });
   },
 
-  send: (message: string): BasketAction<State> => async produce => {
-    produce(draft => {
-      draft.isSending = true;
+  send: (message: string): BasketAction<State> => async setState => {
+    setState({
+      isSending: true,
     });
     await new Promise(r => setTimeout(r, 1000));
-    produce(draft => {
-      draft.isSending = false;
-      draft.message = '';
+    setState({
+      isSending: false,
+      message: '',
     });
     return message;
   },

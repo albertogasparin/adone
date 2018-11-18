@@ -12,7 +12,7 @@ describe('createStore', () => {
       setState: expect.any(Function),
       subscribe: expect.any(Function),
       listeners: expect.any(Function),
-      produce: expect.any(Function),
+      mutator: expect.any(Function),
     });
   });
 
@@ -53,11 +53,11 @@ describe('createStore', () => {
     });
   });
 
-  describe('produce()', () => {
+  describe('mutator()', () => {
     it('should modify state', () => {
       const store = createStore(basketMock.key, basketMock.defaultState);
-      store.produce(draft => {
-        draft.count += 1;
+      store.mutator({
+        count: 1,
       });
       expect(store.getState()).toEqual({ count: 1 });
     });

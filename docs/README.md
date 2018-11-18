@@ -26,10 +26,10 @@ const counterBasket = {
   },
   // actions that trigger store mutation
   actions: {
-    increment: () => produce => {
-      // mutate state directly thanks to immer.js
-      produce(draft => {
-        draft.count += 1;
+    increment: () => (setState, getState) => {
+      // mutate state syncronously
+      setState({
+        count: getState().count + 1,
       });
     },
   },

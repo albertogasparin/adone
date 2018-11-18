@@ -11,9 +11,9 @@ const defaultState: State = {
 };
 
 const actions = {
-  increment: (): BasketAction<State> => produce => {
-    produce(draft => {
-      draft.count += 1;
+  increment: (): BasketAction<State> => (setState, getState) => {
+    setState({
+      count: getState().count + 1,
     });
   },
 };

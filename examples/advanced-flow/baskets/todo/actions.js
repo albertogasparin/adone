@@ -9,15 +9,15 @@ const TODOS: { [id: string]: TodoModel[] } = {
   '2': [{ title: 'Do the dishes' }],
 };
 
-export const load = (uid: string): BasketAction<State> => async produce => {
-  produce(function setLoading(draft) {
-    draft.loading = true;
-    draft.data = null; // reset
+export const load = (uid: string): BasketAction<State> => async setState => {
+  setState({
+    loading: true,
+    data: null, // reset
   });
   // simulate async call
   await new Promise(r => setTimeout(r, 1000));
-  produce(function setData(draft: State) {
-    draft.loading = false;
-    draft.data = TODOS[uid];
+  setState({
+    loading: false,
+    data: TODOS[uid],
   });
 };

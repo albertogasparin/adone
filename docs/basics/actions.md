@@ -4,7 +4,7 @@ In order to modify data in a basket you can define actions.
 
 ```js
 const actions = {
-  doSomething: (...args) => (produce, getState, extraArgument) => {
+  doSomething: (...args) => (setState, getState, extraArgument) => {
     // your code here
   },
 };
@@ -12,19 +12,16 @@ const actions = {
 
 Actions are function that return another function. This "inner function" (called thunk) will be called by Adone with three arguments:
 
-##### - `produce`
+##### - mutator (the default is `setState`)
 
-It is the method responsible for triggering actual updates to the store. It is an enhanced version of `immer`, and you call it providing a function that takes the current state as argument and modifies it (or returns a new one).
+It is the method responsible for triggering actual updates to the store. The default is a syncronous version of React `setState`, supporting only an object as argument (shallow merged into current state). See React guidelines for do's and dont's around setState for more.
 
 ```js
 // inside your action
-produce(function changeState(state) {
-  state.count += 1;
-});
+setState({ count: 0 });
 ```
 
-For more details about `produce` works, please refer to [immer documentation](https://github.com/mweststrate/immer).
-_Side note: If you use a named function, Adone devtools connector will pick it up and show it in the logs_
+If you want to replace the default implementation with something else, for instance [immer](https://github.com/mweststrate/immer), just override `defaults.mutator` providing your own implementation.
 
 ##### - `getState`
 
@@ -43,20 +40,20 @@ This is an optional, customisable argument. It can be an object with utilities a
 
 ### Basket async actions
 
-Like [redux-thunk](https://github.com/reduxjs/redux-thunk), basket actions can be async. The mutator function (passed to produce) cannot be async but the thunk returned by the action can
+Like [redux-thunk](https://github.com/reduxjs/redux-thunk), basket actions can be async and you can call `setState` as many time as you need. Please note that changes to the state are applied immediately, so you should always use `getState` to query for a value. If you cache in a variable the result of `getState` you might accidentally use stale data.
 
 ```js
 const actions = {
-  load: () => async (produce, getState, { api }) => {
+  load: () => async (setState, getState, { api }) => {
     if (getState().loading === true) return;
-    produce(function setLoading(draft) {
-      draft.loading = true;
+    setState({
+      loading: true,
     });
 
     const todos = await api.get('/todos');
-    produce(function setData(draft) {
-      draft.loading = false;
-      draft.data = todos;
+    setState({
+      loading: false,
+      data: todos,
     });
   },
 };

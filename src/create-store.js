@@ -24,7 +24,7 @@ function createStore(key, initialState) {
       return listeners;
     },
   };
-  store.produce = applyMiddleware(store, defaults.middlewares);
+  store.mutator = applyMiddleware(store, defaults.middlewares);
   return store;
 }
 

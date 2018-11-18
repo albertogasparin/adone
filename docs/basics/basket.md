@@ -12,7 +12,7 @@ const defaultState = {
 };
 
 const actions = {
-  increment: () => produce => {
+  increment: () => setState => {
     // action code...
   },
 };

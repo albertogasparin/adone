@@ -13,9 +13,9 @@ const defaultState: State = {
 };
 
 const actions = {
-  add: (message: string): BasketAction<State> => produce => {
-    produce(draft => {
-      draft.data.push(message);
+  add: (message: string): BasketAction<State> => (setState, getState) => {
+    setState({
+      data: [...getState().data, message],
     });
   },
 };

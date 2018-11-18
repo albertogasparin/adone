@@ -15,5 +15,5 @@ export const storeMock = {
   setState: jest.fn(),
   subscribe: jest.fn(),
   listeners: jest.fn(),
-  produce: jest.fn(),
+  mutator: jest.fn(),
 };

@@ -1,13 +1,13 @@
-const updateMiddleware = store => next => fn => {
-  const changes = [];
+const updateMiddleware = store => next => arg => {
+  let output;
   const state = store.getState();
-  const nextState = next(state, fn, patches => {
-    changes.push(...patches);
+  const nextState = next(state, arg, out => {
+    output = out;
   });
   if (nextState !== state) {
     store.setState(nextState);
   }
-  return { changes };
+  return output;
 };
 
 export default updateMiddleware;

@@ -15,11 +15,11 @@ describe('bindActions', () => {
     });
   });
 
-  it('should bound actions providing produce, getState and optional extra args', () => {
+  it('should bound actions providing mutator, getState and optional extra args', () => {
     const actionInner = jest.fn();
-    const produce = jest.fn();
+    const mutator = jest.fn();
     basketMock.actions.increase.mockReturnValue(actionInner);
-    combineMiddlewares.mockReturnValue(produce);
+    combineMiddlewares.mockReturnValue(mutator);
     const result = bindActions(basketMock.actions, storeMock, { url: '' });
     result.increase(1);
     expect(basketMock.actions.increase).toHaveBeenCalledWith(1);
@@ -28,15 +28,5 @@ describe('bindActions', () => {
       storeMock.getState,
       { url: '' }
     );
-  });
-
-  it('should wrap produce adding displayName to modifier', () => {
-    const myModifier = () => {};
-    const produce = jest.fn();
-    basketMock.actions.increase.mockReturnValue(prod => prod(myModifier));
-    combineMiddlewares.mockReturnValue(produce);
-    const result = bindActions(basketMock.actions, storeMock, {});
-    result.increase(1);
-    expect(myModifier.displayName).toEqual('increase.myModifier');
   });
 });

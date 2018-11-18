@@ -11,9 +11,9 @@ const defaultState: State = {
 };
 
 const actions = {
-  change: (value: string): BasketAction<State> => produce => {
-    produce(draft => {
-      draft.color = value;
+  change: (value: string): BasketAction<State> => setState => {
+    setState({
+      color: value,
     });
   },
 };
