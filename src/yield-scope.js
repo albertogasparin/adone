@@ -12,13 +12,7 @@ export default class YieldScope extends Component {
       PropTypes.object,
       PropTypes.arrayOf(PropTypes.object),
     ]).isRequired,
-    local: PropTypes.bool,
     actionExtraArgument: PropTypes.object,
-  };
-
-  static defaultProps = {
-    id: '',
-    local: false,
   };
 
   constructor(props) {
@@ -52,7 +46,7 @@ export default class YieldScope extends Component {
   }
 
   getRegistry() {
-    const isLocal = this.props.local || !this.props.id;
+    const isLocal = !this.props.id;
     return isLocal ? this.registry : this.state.globalRegistry;
   }
 
@@ -61,7 +55,7 @@ export default class YieldScope extends Component {
     if (!scopedBaskets.includes(basket)) {
       return null;
     }
-    return this.getRegistry().getBasket(basket, scopeId || 'local');
+    return this.getRegistry().getBasket(basket, scopeId || '__local__');
   }
 
   deleteScopedBaskets(scopeId = this.props.id) {

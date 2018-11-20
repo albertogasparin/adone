@@ -8,7 +8,7 @@ export default class Yield extends Component {
   static propTypes = {
     children: PropTypes.func.isRequired,
     from: PropTypes.shape({
-      key: PropTypes.string.isRequired,
+      key: PropTypes.array.isRequired,
       defaultState: PropTypes.object.isRequired,
       actions: PropTypes.object.isRequired,
     }).isRequired,

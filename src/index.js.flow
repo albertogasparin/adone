@@ -16,7 +16,7 @@ type BasketStoreUnsubscribe = () => void;
 type YieldRenderPropFunction<S, A> = ($Exact<$ReadOnly<S>> & $Exact<A>) => Node;
 
 export type Basket<ST, AC> = {|
-  key: string,
+  key: string[],
   defaultState: ST,
   actions: AC,
 |};
@@ -24,7 +24,7 @@ export type Basket<ST, AC> = {|
 export type BasketStore<ST> = {|
   getState: GetState<ST>,
   setState: ST => void,
-  key: string,
+  key: string[],
   subscribe: (listener: () => void) => BasketStoreUnsubscribe,
   mutator: SetState<ST>,
 |};
@@ -79,16 +79,10 @@ declare export class Yield<ST, AC, PI> extends React$Component<
 }
 
 declare export class YieldScope extends React$Component<
-  | {
-      id: string,
-      for: Basket<*, *> | Basket<*, *>[],
-      local?: false,
-    }
-  | {
-      id?: string,
-      for: Basket<*, *> | Basket<*, *>[],
-      local: true,
-    },
+  {
+    id?: string,
+    for: Basket<*, *> | Basket<*, *>[],
+  },
   {
     globalRegistry: Registry,
     getBasket: $PropertyType<Registry, 'getBasket'>,
@@ -126,7 +120,7 @@ declare export function createYield<ST, AC>(
 ): React$ComponentType<{ children: YieldRenderPropFunction<ST, AC> }>;
 
 declare export function createYield<ST, AC>(
-  name: string,
+  displayName: string,
   from: Basket<ST, AC>
 ): React$ComponentType<{ children: YieldRenderPropFunction<ST, AC> }>;
 
@@ -141,13 +135,31 @@ declare export function createYield<ST, AC, PI>(
 ): React$ComponentType<{ children: YieldRenderPropFunction<{||}, AC> }>;
 
 declare export function createYield<ST, AC, PI>(
-  name: string,
+  displayName: string,
   from: Basket<ST, AC>,
   pick: (ST) => PI
 ): React$ComponentType<{ children: YieldRenderPropFunction<PI, AC> }>;
 
 declare export function createYield<ST, AC, PI>(
-  name: string,
+  displayName: string,
   from: Basket<ST, AC>,
   pick: null
 ): React$ComponentType<{ children: YieldRenderPropFunction<{||}, AC> }>;
+
+declare export function createScope<ST, AC>(
+  basket: Basket<ST, AC>
+): React$ComponentType<{ id?: string }>;
+
+declare export function createScope<ST, AC>(
+  displayName: string,
+  basket: Basket<ST, AC>
+): React$ComponentType<{ id?: string }>;
+
+declare export function createComponents<ST, AC>({
+  defaultState: ST,
+  actions: AC,
+  name?: string,
+}): {
+  Yield: React$ComponentType<{ children: YieldRenderPropFunction<ST, AC> }>,
+  Scope: React$ComponentType<{ id?: string }>,
+};

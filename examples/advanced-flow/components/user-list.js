@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 
-import { UserState } from '../baskets/user';
+import { UserYield } from '../baskets/user';
 import { type UserModel } from '../baskets/user/types';
 
 type UserItemProps = {
@@ -50,7 +50,7 @@ class UserList extends Component<UserListProps> {
 }
 
 const YieldedUserList = () => (
-  <UserState>
+  <UserYield>
     {({ data, loading, selected, select, load }) => (
       <UserList
         users={data || []}
@@ -60,7 +60,7 @@ const YieldedUserList = () => (
         onLoad={load}
       />
     )}
-  </UserState>
+  </UserYield>
 );
 
 export default YieldedUserList;

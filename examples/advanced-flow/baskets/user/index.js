@@ -1,6 +1,6 @@
 // @flow
 
-import { createYield } from 'react-adone';
+import { Yield, createComponents } from 'react-adone';
 import type { State } from './types';
 
 import * as actions from './actions';
@@ -12,18 +12,16 @@ const defaultState: State = {
   loading: false,
 };
 
-const basket = {
-  key: 'user',
+const { Yield: UserYield } = createComponents({
   defaultState,
   actions,
-};
+});
 
-// You can even export ready-to-use components
-export const UserState = createYield('UserState', basket);
-export const UserSelectedState = createYield(
-  'UserSelectedState',
-  basket,
-  selectors.getSelected
-);
+export class UserSelectedState extends Yield<*, *, *> {
+  static defaultProps = {
+    ...(UserYield: any).defaultProps,
+    pick: selectors.getSelected,
+  };
+}
 
-export default basket;
+export { UserYield };

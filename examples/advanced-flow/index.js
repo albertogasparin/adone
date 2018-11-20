@@ -11,7 +11,7 @@ import TodoList from './components/todo-list';
  */
 const mw: Middleware = store => next => fn => {
   const result = next(fn);
-  console.log('Changed on', store.key, result.changes); // eslint-disable-line no-console
+  console.log('Changed on', store.key); // eslint-disable-line no-console
   return result;
 };
 defaults.middlewares.add(mw);

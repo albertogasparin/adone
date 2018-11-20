@@ -1,6 +1,6 @@
 // @flow
 
-import type { BasketAction } from 'react-adone';
+import { type BasketAction, createComponents } from 'react-adone';
 
 type State = {
   count: number,
@@ -18,10 +18,9 @@ const actions = {
   },
 };
 
-const basket = {
-  key: 'todo',
+const { Yield: CountYield } = createComponents({
   defaultState,
   actions,
-};
+});
 
-export default basket;
+export { CountYield };

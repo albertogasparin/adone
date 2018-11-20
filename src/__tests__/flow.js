@@ -76,7 +76,7 @@ basket = { key: 'bla', defaultState: { count: 0 } };
 basket = { key: 'bla', defaultState: { count: 0 } };
 
 // Correct
-basket = { key: 'bla', defaultState: { count: 0 }, actions };
+basket = { key: ['bla'], defaultState: { count: 0 }, actions };
 
 /**
  * Yield component types tests
@@ -190,24 +190,15 @@ Test = (
   <YieldScope>bla</YieldScope>
 );
 
-Test = (
-  // $ExpectError should require id or local
-  <YieldScope for={basket}>bla</YieldScope>
-);
-
 // Correct
 Test = (
   <YieldScope for={basket} id="a">
     bla
   </YieldScope>
 );
+Test = <YieldScope for={basket}>bla</YieldScope>;
 Test = (
-  <YieldScope for={basket} local>
-    bla
-  </YieldScope>
-);
-Test = (
-  <YieldScope for={basket} id="a" local actionExtraArgument={{ url: '' }}>
+  <YieldScope for={basket} id="a" actionExtraArgument={{ url: '' }}>
     bla
   </YieldScope>
 );

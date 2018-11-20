@@ -31,7 +31,7 @@ describe('BasketRegistry', () => {
   });
 
   it('should get and create a new basket with initial data', () => {
-    const data = { [basketMock.key]: { count: 1 } };
+    const data = { [basketMock.key + '@__global__']: { count: 1 } };
     const registry = new BasketRegistry();
     registry.configure({ initialStates: data });
     const instance = registry.getBasket(basketMock);

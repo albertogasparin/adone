@@ -1,9 +1,9 @@
 // @flow
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { YieldProvider, Yield } from 'react-adone';
+import { YieldProvider } from 'react-adone';
 
-import basket from './basket';
+import { CountYield } from './basket';
 
 /**
  * Main App
@@ -14,14 +14,14 @@ class App extends Component<{}> {
       <YieldProvider>
         <h1>Counter example</h1>
         <main>
-          <Yield from={basket}>
+          <CountYield>
             {({ count, increment }) => (
               <div>
                 <p>{count}</p>
                 <button onClick={increment}>+1</button>
               </div>
             )}
-          </Yield>
+          </CountYield>
         </main>
       </YieldProvider>
     );

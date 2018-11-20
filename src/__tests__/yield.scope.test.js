@@ -88,7 +88,7 @@ describe('YieldScope', () => {
       );
       expect(wrapper.instance().registry.getBasket).toHaveBeenCalledWith(
         basketMock,
-        'local'
+        '__local__'
       );
       expect(defaultRegistry.getBasket).not.toHaveBeenCalled();
     });

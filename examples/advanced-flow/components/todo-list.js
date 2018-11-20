@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 
 import { UserSelectedState } from '../baskets/user';
-import { TodoState } from '../baskets/todo';
+import { TodoYield } from '../baskets/todo';
 import { type TodoModel } from '../baskets/todo/types';
 
 type TodoItemProps = {
@@ -51,7 +51,7 @@ class TodoList extends Component<TodoListProps> {
 const YieldedTodoList = () => (
   <UserSelectedState>
     {({ sel }) => (
-      <TodoState>
+      <TodoYield>
         {({ data, loading, load }) => (
           <TodoList
             todos={data || []}
@@ -60,7 +60,7 @@ const YieldedTodoList = () => (
             selectedUser={sel}
           />
         )}
-      </TodoState>
+      </TodoYield>
     )}
   </UserSelectedState>
 );

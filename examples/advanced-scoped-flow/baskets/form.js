@@ -1,6 +1,6 @@
 // @flow
 
-import type { BasketAction } from 'react-adone';
+import { createComponents, type BasketAction } from 'react-adone';
 
 type State = {
   message: string,
@@ -35,10 +35,9 @@ const actions = {
   },
 };
 
-const basket = {
-  key: 'form',
+const { Yield: FormYield, Scope: FormScope } = createComponents({
+  name: 'form',
   defaultState,
   actions,
-};
-
-export default basket;
+});
+export { FormYield, FormScope };

@@ -1,16 +1,16 @@
 import bindActions from './bind-actions';
 import createStore from './create-store';
 
-export const GLOBAL_SCOPE = '@@GLOBAL';
+export const GLOBAL_SCOPE = '__global__';
 
 export default class BasketRegistry {
   baskets = new Map();
   initialStates = {};
 
-  configure({ initialStates = {}, actionExtraArgument = {} }) {
+  configure = ({ initialStates = {}, actionExtraArgument = {} }) => {
     this.initialStates = initialStates;
     this.actionExtraArgument = actionExtraArgument;
-  }
+  };
 
   initBasket = (key, basket) => {
     const { defaultState, actions } = basket;
@@ -33,9 +33,7 @@ export default class BasketRegistry {
     this.baskets.delete(key);
   };
 
-  generateKey(basket, scopeId) {
-    return basket.key + (scopeId === GLOBAL_SCOPE ? '' : `#${scopeId}`);
-  }
+  generateKey = (basket, scopeId) => `${basket.key.join('__')}@${scopeId}`;
 }
 
 export const defaultRegistry = new BasketRegistry();

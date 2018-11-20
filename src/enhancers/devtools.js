@@ -2,7 +2,7 @@ import defaults from '../defaults';
 
 const connectDevTools = store => {
   const devTools = window.__REDUX_DEVTOOLS_EXTENSION__.connect({
-    name: `Basket: ${store.key}`,
+    name: `Adone: ${store.key}`,
   });
   devTools.init(store.getState());
   devTools.subscribe(message => {
