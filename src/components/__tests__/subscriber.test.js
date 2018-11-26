@@ -3,12 +3,12 @@
 import React, { Component } from 'react';
 import { shallow, mount } from 'enzyme';
 
-import { basketMock, storeMock } from './mocks';
-import Yield from '../yield';
-import YieldProvider from '../yield-provider';
-import { defaultRegistry } from '../registry';
+import { basketMock, storeMock } from '../../__tests__/mocks';
+import Subscriber from '../subscriber';
+import AdoneProvider from '../provider';
+import { defaultRegistry } from '../../registry';
 
-jest.mock('../registry', () => {
+jest.mock('../../registry', () => {
   const mockRegistry = {
     configure: jest.fn(),
     getBasket: jest.fn(),
@@ -20,17 +20,16 @@ jest.mock('../registry', () => {
   };
 });
 
-describe('Yield', () => {
+describe('Subscriber', () => {
   const children = jest.fn().mockReturnValue(null);
+  Subscriber.basketType = basketMock;
 
   const modes = {
     withProvider: (props = {}) => {
       const getElement = () => (
-        <YieldProvider>
-          <Yield from={basketMock} {...props}>
-            {children}
-          </Yield>
-        </YieldProvider>
+        <AdoneProvider>
+          <Subscriber {...props}>{children}</Subscriber>
+        </AdoneProvider>
       );
       const getShallow = () =>
         shallow(getElement())
@@ -45,11 +44,7 @@ describe('Yield', () => {
       };
     },
     withoutProvider: (props = {}) => {
-      const getElement = () => (
-        <Yield from={basketMock} {...props}>
-          {children}
-        </Yield>
-      );
+      const getElement = () => <Subscriber {...props}>{children}</Subscriber>;
       const getShallow = () => shallow(getElement());
       const getMount = () => mount(getElement());
       return {
@@ -122,7 +117,7 @@ describe('Yield', () => {
         storeMock.getState.mockReturnValue({ count: 1 });
         wrapper.setProps({ foo: 1 });
         wrapper
-          .find(Yield)
+          .find(Subscriber)
           .instance()
           .onUpdate();
 
@@ -149,15 +144,19 @@ describe('Yield', () => {
       });
 
       it('should render children with pick return value', () => {
-        const pick = jest.fn().mockReturnValue({ foo: 1 });
-        const { getMount, children } = setup({ pick, withProps: { prop: 1 } });
+        Subscriber.selector = jest.fn().mockReturnValue({ foo: 1 });
+        const { getMount, children } = setup({ prop: 1 });
         getMount();
-        expect(pick).toHaveBeenCalledWith(basketMock.defaultState, { prop: 1 });
+        expect(Subscriber.selector).toHaveBeenCalledWith(
+          basketMock.defaultState,
+          { prop: 1 }
+        );
         expect(children).toHaveBeenCalledWith({
           foo: 1,
           increase: expect.any(Function),
           decrease: expect.any(Function),
         });
+        Subscriber.selector = undefined;
       });
     });
   });

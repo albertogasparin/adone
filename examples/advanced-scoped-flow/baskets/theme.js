@@ -18,7 +18,7 @@ const actions = {
   },
 };
 
-const { Yield: ThemeYield, Scope: ThemeScope } = createComponents({
+const { Subscriber: ThemeYield, Scope: ThemeScope } = createComponents({
   name: 'theme',
   defaultState,
   actions,

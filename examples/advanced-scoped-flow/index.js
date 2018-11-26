@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { YieldProvider } from 'react-adone';
+import { AdoneProvider } from 'react-adone';
 
 import Chat from './chat';
 
@@ -27,7 +27,7 @@ class App extends Component<{}, { reset: number, remount: number }> {
   render() {
     const { reset, remount } = this.state;
     return (
-      <YieldProvider>
+      <AdoneProvider>
         <h1>Chat example</h1>
         <button onClick={this.reset}>Reset theme (scope id change)</button>
         <button onClick={this.remount}>Reset form (local scope remount)</button>
@@ -35,7 +35,7 @@ class App extends Component<{}, { reset: number, remount: number }> {
           <Chat key={String(remount)} id={String(reset)} />
           <Chat key={String(remount + 1)} id={String(reset + 1)} />
         </main>
-      </YieldProvider>
+      </AdoneProvider>
     );
   }
 }

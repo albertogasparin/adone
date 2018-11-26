@@ -1,20 +1,16 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { readContext } from './context';
-import shallowEqual from './utils/shallow-equal';
+import { readContext } from '../context';
+import shallowEqual from '../utils/shallow-equal';
 
-export default class Yield extends Component {
+export default class Subscriber extends Component {
   static propTypes = {
     children: PropTypes.func.isRequired,
-    from: PropTypes.shape({
-      key: PropTypes.array.isRequired,
-      defaultState: PropTypes.object.isRequired,
-      actions: PropTypes.object.isRequired,
-    }).isRequired,
-    pick: PropTypes.func,
-    withProps: PropTypes.object,
   };
+
+  static basketType = null;
+  static selector = null;
 
   basket = null;
   subscription = null;
@@ -46,21 +42,23 @@ export default class Yield extends Component {
   }
 
   getBasketState(fromContext = false) {
-    const { pick, withProps } = this.props;
+    // eslint-disable-next-line no-unused-vars
+    const { children, ...props } = this.props;
+    const { selector } = this.constructor;
     // We can get baskets from context ONLY during rendering phase
     // overwise react will fallback to the default ctx value
-    this.basket = fromContext ? this.getBasketFromContext() : this.basket;
+    this.basket = fromContext ? this.getInstanceFromContext() : this.basket;
     const state = this.basket.store.getState();
-    return pick ? pick(state, withProps) : state;
+    return selector ? selector(state, props) : state;
   }
 
-  getBasketFromContext() {
-    const { from } = this.props;
+  getInstanceFromContext() {
+    const { basketType } = this.constructor;
     // We use React context just to get the baskets registry
     // then we rely on our internal pub/sub to get updates
     // because context API doesn't have builtin selectors (yet).
     const ctx = readContext();
-    return ctx.getBasket(from);
+    return ctx.getBasket(basketType);
   }
 
   subscribeToUpdates() {

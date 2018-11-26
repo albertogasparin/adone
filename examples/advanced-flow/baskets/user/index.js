@@ -1,6 +1,6 @@
 // @flow
 
-import { Yield, createComponents } from 'react-adone';
+import { createComponents, createSelector } from 'react-adone';
 import type { State } from './types';
 
 import * as actions from './actions';
@@ -12,16 +12,11 @@ const defaultState: State = {
   loading: false,
 };
 
-const { Yield: UserYield } = createComponents({
+const { Subscriber: UserYield } = createComponents({
   defaultState,
   actions,
 });
 
-export class UserSelectedState extends Yield<*, *, *> {
-  static defaultProps = {
-    ...(UserYield: any).defaultProps,
-    pick: selectors.getSelected,
-  };
-}
+const UserSelectedState = createSelector(UserYield, selectors.getSelected);
 
-export { UserYield };
+export { UserYield, UserSelectedState };

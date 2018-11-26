@@ -35,7 +35,7 @@ const actions = {
   },
 };
 
-const { Yield: FormYield, Scope: FormScope } = createComponents({
+const { Subscriber: FormYield, Scope: FormScope } = createComponents({
   name: 'form',
   defaultState,
   actions,

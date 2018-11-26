@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { YieldProvider, defaults, type Middleware } from 'react-adone';
+import { AdoneProvider, defaults, type Middleware } from 'react-adone';
 
 import UserList from './components/user-list';
 import TodoList from './components/todo-list';
@@ -22,13 +22,13 @@ defaults.middlewares.add(mw);
 class App extends Component<{}> {
   render() {
     return (
-      <YieldProvider>
+      <AdoneProvider>
         <h1>User Todos example</h1>
         <main>
           <UserList />
           <TodoList />
         </main>
-      </YieldProvider>
+      </AdoneProvider>
     );
   }
 }

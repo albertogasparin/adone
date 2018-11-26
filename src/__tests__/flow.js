@@ -1,14 +1,7 @@
 // @flow
 /* eslint-disable no-unused-vars, react/display-name */
 import React from 'react';
-import {
-  Yield,
-  YieldScope,
-  YieldProvider,
-  createYield,
-  type BasketAction,
-  type Basket,
-} from '..';
+import { AdoneProvider, type BasketAction, type Basket } from '..';
 
 /**
  * Basket types tests
@@ -204,13 +197,13 @@ Test = (
 );
 
 /**
- * YieldProvider types tests
+ * AdoneProvider types tests
  */
 Test = (
   // $ExpectError initialStates should be an object
-  <YieldProvider initialStates={null}>bla</YieldProvider>
+  <AdoneProvider initialStates={null}>bla</AdoneProvider>
 );
 
 // Correct
-Test = <YieldProvider initialStates={{ k: {} }}>bla</YieldProvider>;
-Test = <YieldProvider actionExtraArgument={{ url: '' }}>bla</YieldProvider>;
+Test = <AdoneProvider initialStates={{ k: {} }}>bla</AdoneProvider>;
+Test = <AdoneProvider actionExtraArgument={{ url: '' }}>bla</AdoneProvider>;

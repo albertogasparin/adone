@@ -3,14 +3,14 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import YieldProvider from '../yield-provider';
-import BasketRegistry from '../registry';
+import AdoneProvider from '../provider';
+import BasketRegistry from '../../registry';
 
-describe('YieldProvider', () => {
+describe('AdoneProvider', () => {
   describe('render', () => {
     it('should render context provider with value prop and children', () => {
       const children = <div />;
-      const wrapper = shallow(<YieldProvider>{children}</YieldProvider>);
+      const wrapper = shallow(<AdoneProvider>{children}</AdoneProvider>);
       expect(wrapper.name()).toEqual('ContextProvider');
       expect(wrapper.props()).toEqual({
         children,
@@ -26,7 +26,7 @@ describe('YieldProvider', () => {
     it('should have basket registry in state', () => {
       const children = <div />;
       const instance = shallow(
-        <YieldProvider>{children}</YieldProvider>
+        <AdoneProvider>{children}</AdoneProvider>
       ).instance();
       expect(instance.registry).toBeDefined();
       expect(instance.state.globalRegistry).toBe(instance.registry);

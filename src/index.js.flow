@@ -56,42 +56,7 @@ declare export class Registry {
 
 declare export var defaultRegistry: Registry;
 
-declare export class Yield<ST, AC, PI> extends React$Component<
-  | {|
-      children: YieldRenderPropFunction<ST, AC>,
-      from: Basket<ST, AC>,
-      withProps?: {},
-    |}
-  | {|
-      children: YieldRenderPropFunction<PI, AC>,
-      from: Basket<ST, AC>,
-      pick: ST => PI,
-      withProps?: {},
-    |}
-  | {|
-      children: YieldRenderPropFunction<{||}, AC>,
-      from: Basket<ST, AC>,
-      pick: null,
-      withProps?: {},
-    |}
-> {
-  basket: BasketInstance<ST, AC>;
-}
-
-declare export class YieldScope extends React$Component<
-  {
-    id?: string,
-    for: Basket<*, *> | Basket<*, *>[],
-  },
-  {
-    globalRegistry: Registry,
-    getBasket: $PropertyType<Registry, 'getBasket'>,
-  }
-> {
-  registry: Registry;
-}
-
-declare export class YieldProvider extends React$Component<
+declare export class AdoneProvider extends React$Component<
   {
     initialStates?: {},
     actionExtraArgument?: any,
@@ -115,51 +80,21 @@ declare export var defaults: {
   mutator: <ST>(prevState: ST, partialState: *) => ST,
 };
 
-declare export function createYield<ST, AC>(
-  from: Basket<ST, AC>
-): React$ComponentType<{ children: YieldRenderPropFunction<ST, AC> }>;
-
-declare export function createYield<ST, AC>(
-  displayName: string,
-  from: Basket<ST, AC>
-): React$ComponentType<{ children: YieldRenderPropFunction<ST, AC> }>;
-
-declare export function createYield<ST, AC, PI>(
-  from: Basket<ST, AC>,
-  pick: (ST) => PI
-): React$ComponentType<{ children: YieldRenderPropFunction<PI, AC> }>;
-
-declare export function createYield<ST, AC, PI>(
-  from: Basket<ST, AC>,
-  pick: null
-): React$ComponentType<{ children: YieldRenderPropFunction<{||}, AC> }>;
-
-declare export function createYield<ST, AC, PI>(
-  displayName: string,
-  from: Basket<ST, AC>,
-  pick: (ST) => PI
-): React$ComponentType<{ children: YieldRenderPropFunction<PI, AC> }>;
-
-declare export function createYield<ST, AC, PI>(
-  displayName: string,
-  from: Basket<ST, AC>,
-  pick: null
-): React$ComponentType<{ children: YieldRenderPropFunction<{||}, AC> }>;
-
-declare export function createScope<ST, AC>(
-  basket: Basket<ST, AC>
-): React$ComponentType<{ id?: string }>;
-
-declare export function createScope<ST, AC>(
-  displayName: string,
-  basket: Basket<ST, AC>
-): React$ComponentType<{ id?: string }>;
-
 declare export function createComponents<ST, AC>({
   defaultState: ST,
   actions: AC,
   name?: string,
 }): {
-  Yield: React$ComponentType<{ children: YieldRenderPropFunction<ST, AC> }>,
+  Subscriber: React$ComponentType<{
+    children: YieldRenderPropFunction<ST, AC>,
+  }>,
   Scope: React$ComponentType<{ id?: string }>,
 };
+
+declare export function createSelector<ST, AC, SE>(
+  Subscriber: React$ComponentType<{
+    children: YieldRenderPropFunction<ST, AC>,
+  }>,
+  selector: (ST) => SE,
+  displayName?: string
+): React$ComponentType<{ children: YieldRenderPropFunction<SE, AC> }>;

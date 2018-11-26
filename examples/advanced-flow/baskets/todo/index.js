@@ -10,7 +10,7 @@ const defaultState: State = {
   loading: false,
 };
 
-const { Yield: TodoYield } = createComponents({
+const { Subscriber: TodoYield } = createComponents({
   defaultState,
   actions,
 });

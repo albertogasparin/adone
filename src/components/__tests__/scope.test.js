@@ -3,17 +3,17 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 
-import { basketMock, storeMock } from './mocks';
-import YieldScope from '../yield-scope';
-import { defaultRegistry } from '../registry';
-import Yield from '../yield';
+import { basketMock, storeMock } from '../../__tests__/mocks';
+import { defaultRegistry } from '../../registry';
+import createComponents from '../../create-components';
 
 const mockRegistry = {
   configure: jest.fn(),
   getBasket: jest.fn(),
+  deleteBasket: jest.fn(),
 };
 
-jest.mock('../registry', () => ({
+jest.mock('../../registry', () => ({
   __esModule: true,
   default: jest.fn().mockImplementation(() => mockRegistry),
   defaultRegistry: {
@@ -23,13 +23,16 @@ jest.mock('../registry', () => ({
   },
 }));
 
-describe('YieldScope', () => {
+const { Subscriber, Scope } = createComponents({
+  defaultState: basketMock.defaultState,
+  actions: basketMock.actions,
+});
+
+describe('Scope', () => {
   describe('render', () => {
     it('should render context provider with value prop and children', () => {
       const children = <div />;
-      const wrapper = shallow(
-        <YieldScope for={basketMock}>{children}</YieldScope>
-      );
+      const wrapper = shallow(<Scope>{children}</Scope>);
       expect(wrapper.name()).toEqual('ContextProvider');
       expect(wrapper.props()).toEqual({
         children,
@@ -53,39 +56,29 @@ describe('YieldScope', () => {
     });
 
     it('should get basket from global with scope id if matching', () => {
-      const children = <Yield from={basketMock}>{() => null}</Yield>;
-      const wrapper = mount(
-        <YieldScope id="s1" for={basketMock}>
-          {children}
-        </YieldScope>
-      );
+      const children = <Subscriber>{() => null}</Subscriber>;
+      const wrapper = mount(<Scope scope="s1">{children}</Scope>);
       expect(defaultRegistry.getBasket).toHaveBeenCalledWith(basketMock, 's1');
       expect(wrapper.instance().registry.getBasket).not.toHaveBeenCalled();
     });
 
     it('should get closer basket with scope id if matching', () => {
-      const children = <Yield from={basketMock}>{() => null}</Yield>;
+      const children = <Subscriber>{() => null}</Subscriber>;
       mount(
-        <YieldScope id="s1" for={basketMock}>
-          <YieldScope id="s2" for={basketMock}>
-            <YieldScope id="s3" for={{ key: 'foo' }}>
-              <YieldScope local for={{ key: 'bar' }}>
-                {children}
-              </YieldScope>
-            </YieldScope>
-          </YieldScope>
-        </YieldScope>
+        <Scope scope="s1">
+          <Scope scope="s2">
+            <Scope scope="s3">
+              <Scope>{children}</Scope>
+            </Scope>
+          </Scope>
+        </Scope>
       );
       expect(defaultRegistry.getBasket).toHaveBeenCalledWith(basketMock, 's2');
     });
 
     it('should get local basket if local matching', () => {
-      const children = <Yield from={basketMock}>{() => null}</Yield>;
-      const wrapper = mount(
-        <YieldScope local for={basketMock}>
-          {children}
-        </YieldScope>
-      );
+      const children = <Subscriber>{() => null}</Subscriber>;
+      const wrapper = mount(<Scope>{children}</Scope>);
       expect(wrapper.instance().registry.getBasket).toHaveBeenCalledWith(
         basketMock,
         '__local__'
@@ -96,12 +89,8 @@ describe('YieldScope', () => {
     it('should cleanup from global on unmount if no more listeners', () => {
       storeMock.subscribe.mockReturnValue(jest.fn());
       storeMock.listeners.mockReturnValue([]);
-      const children = <Yield from={basketMock}>{() => null}</Yield>;
-      const wrapper = mount(
-        <YieldScope id="s1" for={basketMock}>
-          {children}
-        </YieldScope>
-      );
+      const children = <Subscriber>{() => null}</Subscriber>;
+      const wrapper = mount(<Scope scope="s1">{children}</Scope>);
       wrapper.unmount();
       expect(defaultRegistry.deleteBasket).toHaveBeenCalledWith(
         basketMock,
@@ -112,12 +101,8 @@ describe('YieldScope', () => {
     it('should not cleanup from global on unmount if still listeners', () => {
       storeMock.subscribe.mockReturnValue(jest.fn());
       storeMock.listeners.mockReturnValue([jest.fn()]);
-      const children = <Yield from={basketMock}>{() => null}</Yield>;
-      const wrapper = mount(
-        <YieldScope id="s1" for={basketMock}>
-          {children}
-        </YieldScope>
-      );
+      const children = <Subscriber>{() => null}</Subscriber>;
+      const wrapper = mount(<Scope scope="s1">{children}</Scope>);
       wrapper.unmount();
       expect(defaultRegistry.deleteBasket).not.toHaveBeenCalled();
     });
@@ -125,12 +110,8 @@ describe('YieldScope', () => {
     it('should cleanup from global on id change if no more listeners', () => {
       storeMock.subscribe.mockReturnValue(jest.fn());
       storeMock.listeners.mockReturnValue([]);
-      const children = <Yield from={basketMock}>{() => null}</Yield>;
-      const wrapper = mount(
-        <YieldScope id="s1" for={basketMock}>
-          {children}
-        </YieldScope>
-      );
+      const children = <Subscriber>{() => null}</Subscriber>;
+      const wrapper = mount(<Scope scope="s1">{children}</Scope>);
       wrapper.setProps({ id: 's2' });
       expect(defaultRegistry.deleteBasket).toHaveBeenCalledWith(
         basketMock,

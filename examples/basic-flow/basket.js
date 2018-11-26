@@ -18,7 +18,7 @@ const actions = {
   },
 };
 
-const { Yield: CountYield } = createComponents({
+const { Subscriber: CountYield } = createComponents({
   defaultState,
   actions,
 });

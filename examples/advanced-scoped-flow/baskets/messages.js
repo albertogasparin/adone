@@ -20,7 +20,7 @@ const actions = {
   },
 };
 
-const { Yield: MessagesYield } = createComponents({
+const { Subscriber: MessagesYield } = createComponents({
   name: 'messages',
   defaultState,
   actions,

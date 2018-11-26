@@ -1,14 +1,8 @@
-import YieldScope from './yield-scope';
+import Scope from './components/scope';
 
-export default function createScope(displayName, basket) {
-  if (typeof displayName !== 'string') {
-    [basket, displayName] = [displayName, ''];
-  }
-  return class extends YieldScope {
-    static defaultProps = {
-      ...YieldScope.defaultProps,
-      for: basket,
-    };
-    static displayName = displayName || `YieldScope(${basket.key[0]})`;
+export default function createScope(basketType) {
+  return class extends Scope {
+    static basketType = basketType;
+    static displayName = `Scope(${basketType.key[0]})`;
   };
 }

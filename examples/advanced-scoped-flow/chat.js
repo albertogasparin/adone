@@ -8,7 +8,7 @@ import { ThemeScope, ThemeYield } from './baskets/theme';
 export default class Chat extends Component<{ id: string }> {
   render() {
     return (
-      <ThemeScope id={this.props.id}>
+      <ThemeScope scope={this.props.id}>
         <ThemeYield>
           {({ color, change }) => (
             <div style={{ background: color }}>

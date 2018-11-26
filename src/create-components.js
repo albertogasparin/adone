@@ -1,5 +1,5 @@
-import createYield from './create-yield';
 import createScope from './create-scope';
+import createSubscriber from './create-subscriber';
 import hash from './utils/hash';
 
 export default function createComponents({ name = '', defaultState, actions }) {
@@ -12,7 +12,7 @@ export default function createComponents({ name = '', defaultState, actions }) {
     actions,
   };
   return {
-    Yield: createYield(rawBasket),
+    Subscriber: createSubscriber(rawBasket),
     Scope: createScope(rawBasket),
   };
 }
