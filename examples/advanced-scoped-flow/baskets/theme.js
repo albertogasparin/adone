@@ -18,10 +18,13 @@ const actions = {
   },
 };
 
-const { Subscriber: ThemeYield, Scope: ThemeScope } = createComponents({
+const {
+  Subscriber: ThemeSubscriber,
+  Container: ThemeContainer,
+} = createComponents<State, typeof actions>({
   name: 'theme',
   defaultState,
   actions,
 });
 
-export { ThemeYield, ThemeScope };
+export { ThemeSubscriber, ThemeContainer };

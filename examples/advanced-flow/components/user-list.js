@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 
-import { UserYield } from '../baskets/user';
+import { UserSubscriber } from '../baskets/user';
 import { type UserModel } from '../baskets/user/types';
 
 type UserItemProps = {
@@ -49,8 +49,8 @@ class UserList extends Component<UserListProps> {
   }
 }
 
-const YieldedUserList = () => (
-  <UserYield>
+const SubscribedUserList = () => (
+  <UserSubscriber>
     {({ data, loading, selected, select, load }) => (
       <UserList
         users={data || []}
@@ -60,7 +60,7 @@ const YieldedUserList = () => (
         onLoad={load}
       />
     )}
-  </UserYield>
+  </UserSubscriber>
 );
 
-export default YieldedUserList;
+export default SubscribedUserList;

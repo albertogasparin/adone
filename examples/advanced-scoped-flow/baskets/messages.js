@@ -20,10 +20,13 @@ const actions = {
   },
 };
 
-const { Subscriber: MessagesYield } = createComponents({
+const { Subscriber: MessagesSubscriber } = createComponents<
+  State,
+  typeof actions
+>({
   name: 'messages',
   defaultState,
   actions,
 });
 
-export { MessagesYield };
+export { MessagesSubscriber };

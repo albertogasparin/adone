@@ -1,9 +1,13 @@
 // @flow
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { AdoneProvider } from 'react-adone';
+import { defaults } from 'react-adone';
 
 import Chat from './chat';
+/**
+ * Enable Redux devtools support
+ */
+defaults.devtools = true;
 
 /**
  * Main App
@@ -27,7 +31,7 @@ class App extends Component<{}, { reset: number, remount: number }> {
   render() {
     const { reset, remount } = this.state;
     return (
-      <AdoneProvider>
+      <div>
         <h1>Chat example</h1>
         <button onClick={this.reset}>Reset theme (scope id change)</button>
         <button onClick={this.remount}>Reset form (local scope remount)</button>
@@ -35,7 +39,7 @@ class App extends Component<{}, { reset: number, remount: number }> {
           <Chat key={String(remount)} id={String(reset)} />
           <Chat key={String(remount + 1)} id={String(reset + 1)} />
         </main>
-      </AdoneProvider>
+      </div>
     );
   }
 }

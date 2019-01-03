@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { AdoneProvider, defaults, type Middleware } from 'react-adone';
+import { defaults, type Middleware } from 'react-adone';
 
 import UserList from './components/user-list';
 import TodoList from './components/todo-list';
@@ -15,6 +15,10 @@ const mw: Middleware = store => next => fn => {
   return result;
 };
 defaults.middlewares.add(mw);
+/**
+ * Enable Redux devtools support
+ */
+defaults.devtools = true;
 
 /**
  * Main App
@@ -22,13 +26,13 @@ defaults.middlewares.add(mw);
 class App extends Component<{}> {
   render() {
     return (
-      <AdoneProvider>
+      <div>
         <h1>User Todos example</h1>
         <main>
           <UserList />
           <TodoList />
         </main>
-      </AdoneProvider>
+      </div>
     );
   }
 }

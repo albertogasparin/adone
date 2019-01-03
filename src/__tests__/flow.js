@@ -1,7 +1,13 @@
 // @flow
 /* eslint-disable no-unused-vars, react/display-name */
 import React from 'react';
-import { AdoneProvider, type BasketAction, type Basket } from '..';
+import {
+  AdoneProvider,
+  createComponents,
+  createSelector,
+  type BasketAction,
+  type Basket,
+} from '..';
 
 /**
  * Basket types tests
@@ -10,7 +16,8 @@ type State = {| count: number |};
 type ExtraArg = {| api: () => void |};
 
 let Test;
-let TypeYield;
+let Cc;
+let TypeSelector;
 let basket: Basket<State, typeof actions>;
 
 const actions = {
@@ -72,128 +79,74 @@ basket = { key: 'bla', defaultState: { count: 0 } };
 basket = { key: ['bla'], defaultState: { count: 0 }, actions };
 
 /**
- * Yield component types tests
+ * createComponents types tests
  */
-Test = (
-  // $ExpectError children should be a function
-  <Yield>Wrong</Yield>
-);
-
-Test = (
-  // $ExpectError should have "from" prop
-  <Yield>{args => null}</Yield>
-);
-
-Test = (
-  // $ExpectError from should be a valid basket
-  <Yield from={{ key: '', defaultState: {} }}>{args => null}</Yield>
-);
+Cc = createComponents<State, typeof actions>({
+  name: 'Type',
+  defaultState: { count: 0 },
+  actions,
+});
 
 Test = (
   // $ExpectError Child arg shape should be state + actions
-  <Yield from={basket}>{({ foo }) => foo}</Yield>
+  <Cc.Subscriber>{({ foo }) => foo}</Cc.Subscriber>
 );
 
 Test = (
   // $ExpectError Basket actions should be correcly typed
-  <Yield from={basket}>{({ increment }) => increment()}</Yield>
-);
-
-Test = (
-  // $ExpectError Basket state values should be correcly typed
-  <Yield from={basket}>{({ count }) => count.bla}</Yield>
-);
-
-Test = (
-  // $ExpectError Child arg shape should be just actions
-  <Yield from={basket} pick={null}>
-    {({ count }) => count}
-  </Yield>
-);
-
-// Correct
-Test = <Yield from={basket}>{({ count }) => count * 1}</Yield>;
-Test = <Yield from={basket}>{({ count, increment }) => increment(1)}</Yield>;
-Test = (
-  <Yield from={basket} pick={() => ({ baz: 1 })}>
-    {({ baz }) => baz}
-  </Yield>
-);
-Test = (
-  <Yield from={basket} pick={null}>
-    {({ increment }) => increment(1)}
-  </Yield>
-);
-Test = (
-  <Yield from={basket} withProps={{ foo: 1 }}>
-    {() => null}
-  </Yield>
-);
-
-/**
- * createYield types tests
- */
-TypeYield = createYield('TypeYield', basket);
-
-Test = (
-  // $ExpectError Child arg shape should be state + actions
-  <TypeYield>{({ foo }) => foo}</TypeYield>
-);
-
-Test = (
-  // $ExpectError Basket actions should be correcly typed
-  <TypeYield>{({ increment }) => increment()}</TypeYield>
+  <Cc.Subscriber>{({ increment }) => increment()}</Cc.Subscriber>
 );
 
 Test = (
   // $ExpectError Basket state should be read only
-  <TypeYield>{state => (state.count = 1)}</TypeYield>
+  <Cc.Subscriber>{state => (state.count = 1)}</Cc.Subscriber>
 );
 
 // Correct
-Test = <TypeYield>{({ count }) => count + 0}</TypeYield>;
-Test = <TypeYield>{({ increment }) => increment(1)}</TypeYield>;
+Test = <Cc.Subscriber>{({ count }) => count + 0}</Cc.Subscriber>;
+Test = <Cc.Subscriber>{({ increment }) => increment(1)}</Cc.Subscriber>;
 
-TypeYield = createYield(basket, () => ({ baz: 1 }));
+/**
+ * createSelector types tests
+ */
+TypeSelector = createSelector<{ baz: number }, typeof actions>(
+  Cc.Subscriber,
+  () => ({ baz: 1 })
+);
 
 Test = (
   // $ExpectError Child arg shape should be pick + actions
-  <TypeYield>{({ count }) => count}</TypeYield>
+  <TypeSelector>{({ count }) => count}</TypeSelector>
 );
 
 // Correct
-Test = <TypeYield>{({ baz }) => baz}</TypeYield>;
-Test = <TypeYield>{({ increment }) => increment(1)}</TypeYield>;
+Test = <TypeSelector>{({ baz }) => baz}</TypeSelector>;
+Test = <TypeSelector>{({ increment }) => increment(1)}</TypeSelector>;
 
-TypeYield = createYield(basket, null);
+TypeSelector = createSelector<typeof actions>(
+  Cc.Subscriber,
+  null
+);
 
 Test = (
   // $ExpectError Child arg shape should be just actions
-  <TypeYield>{({ count }) => count}</TypeYield>
+  <TypeSelector>{({ count }) => count}</TypeSelector>
 );
 
 // Correct
-Test = <TypeYield>{({ increment }) => increment(1)}</TypeYield>;
+Test = <TypeSelector>{({ increment }) => increment(1)}</TypeSelector>;
 
 /**
- * YieldScope types tests
+ * Container types tests
  */
-Test = (
-  // $ExpectError should require for
-  <YieldScope>bla</YieldScope>
-);
 
 // Correct
+Test = <Cc.Container id="a">bla</Cc.Container>;
+Test = <Cc.Container>bla</Cc.Container>;
 Test = (
-  <YieldScope for={basket} id="a">
+  <Cc.Container id="a" actionExtraArgument={{ url: '' }}>
     bla
-  </YieldScope>
-);
-Test = <YieldScope for={basket}>bla</YieldScope>;
-Test = (
-  <YieldScope for={basket} id="a" actionExtraArgument={{ url: '' }}>
-    bla
-  </YieldScope>
+  </Cc.Container>
 );
 
 /**

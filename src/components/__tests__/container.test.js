@@ -5,7 +5,7 @@ import { shallow, mount } from 'enzyme';
 
 import { basketMock, storeMock } from '../../__tests__/mocks';
 import { defaultRegistry } from '../../registry';
-import createComponents from '../../create-components';
+import { createComponents } from '../creators';
 
 const mockRegistry = {
   configure: jest.fn(),
@@ -23,7 +23,7 @@ jest.mock('../../registry', () => ({
   },
 }));
 
-const { Subscriber, Scope } = createComponents({
+const { Subscriber, Container } = createComponents({
   defaultState: basketMock.defaultState,
   actions: basketMock.actions,
 });
@@ -32,7 +32,7 @@ describe('Scope', () => {
   describe('render', () => {
     it('should render context provider with value prop and children', () => {
       const children = <div />;
-      const wrapper = shallow(<Scope>{children}</Scope>);
+      const wrapper = shallow(<Container>{children}</Container>);
       expect(wrapper.name()).toEqual('ContextProvider');
       expect(wrapper.props()).toEqual({
         children,
@@ -57,30 +57,40 @@ describe('Scope', () => {
 
     it('should get basket from global with scope id if matching', () => {
       const children = <Subscriber>{() => null}</Subscriber>;
-      const wrapper = mount(<Scope scope="s1">{children}</Scope>);
-      expect(defaultRegistry.getBasket).toHaveBeenCalledWith(basketMock, 's1');
+      const wrapper = mount(<Container scope="s1">{children}</Container>);
+      expect(defaultRegistry.getBasket).toHaveBeenCalledWith(
+        Subscriber.basketType,
+        's1'
+      );
       expect(wrapper.instance().registry.getBasket).not.toHaveBeenCalled();
     });
 
     it('should get closer basket with scope id if matching', () => {
       const children = <Subscriber>{() => null}</Subscriber>;
+      const { Container: OtherContainer } = createComponents({
+        defaultState: {},
+        actions: {},
+      });
       mount(
-        <Scope scope="s1">
-          <Scope scope="s2">
-            <Scope scope="s3">
-              <Scope>{children}</Scope>
-            </Scope>
-          </Scope>
-        </Scope>
+        <Container scope="s1">
+          <Container scope="s2">
+            <OtherContainer scope="s3">
+              <OtherContainer>{children}</OtherContainer>
+            </OtherContainer>
+          </Container>
+        </Container>
       );
-      expect(defaultRegistry.getBasket).toHaveBeenCalledWith(basketMock, 's2');
+      expect(defaultRegistry.getBasket).toHaveBeenCalledWith(
+        Subscriber.basketType,
+        's2'
+      );
     });
 
     it('should get local basket if local matching', () => {
       const children = <Subscriber>{() => null}</Subscriber>;
-      const wrapper = mount(<Scope>{children}</Scope>);
+      const wrapper = mount(<Container>{children}</Container>);
       expect(wrapper.instance().registry.getBasket).toHaveBeenCalledWith(
-        basketMock,
+        Subscriber.basketType,
         '__local__'
       );
       expect(defaultRegistry.getBasket).not.toHaveBeenCalled();
@@ -90,10 +100,10 @@ describe('Scope', () => {
       storeMock.subscribe.mockReturnValue(jest.fn());
       storeMock.listeners.mockReturnValue([]);
       const children = <Subscriber>{() => null}</Subscriber>;
-      const wrapper = mount(<Scope scope="s1">{children}</Scope>);
+      const wrapper = mount(<Container scope="s1">{children}</Container>);
       wrapper.unmount();
       expect(defaultRegistry.deleteBasket).toHaveBeenCalledWith(
-        basketMock,
+        Subscriber.basketType,
         's1'
       );
     });
@@ -102,7 +112,7 @@ describe('Scope', () => {
       storeMock.subscribe.mockReturnValue(jest.fn());
       storeMock.listeners.mockReturnValue([jest.fn()]);
       const children = <Subscriber>{() => null}</Subscriber>;
-      const wrapper = mount(<Scope scope="s1">{children}</Scope>);
+      const wrapper = mount(<Container scope="s1">{children}</Container>);
       wrapper.unmount();
       expect(defaultRegistry.deleteBasket).not.toHaveBeenCalled();
     });
@@ -111,10 +121,10 @@ describe('Scope', () => {
       storeMock.subscribe.mockReturnValue(jest.fn());
       storeMock.listeners.mockReturnValue([]);
       const children = <Subscriber>{() => null}</Subscriber>;
-      const wrapper = mount(<Scope scope="s1">{children}</Scope>);
-      wrapper.setProps({ id: 's2' });
+      const wrapper = mount(<Container scope="s1">{children}</Container>);
+      wrapper.setProps({ scope: 's2' });
       expect(defaultRegistry.deleteBasket).toHaveBeenCalledWith(
-        basketMock,
+        Subscriber.basketType,
         's1'
       );
     });

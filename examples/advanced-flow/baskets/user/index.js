@@ -12,11 +12,17 @@ const defaultState: State = {
   loading: false,
 };
 
-const { Subscriber: UserYield } = createComponents({
+const { Subscriber: UserSubscriber } = createComponents<State, typeof actions>({
   defaultState,
   actions,
 });
 
-const UserSelectedState = createSelector(UserYield, selectors.getSelected);
+const UserSelectedSubscriber = createSelector<
+  $Call<typeof selectors.getSelected, State>,
+  typeof actions
+>(
+  UserSubscriber,
+  selectors.getSelected
+);
 
-export { UserYield, UserSelectedState };
+export { UserSubscriber, UserSelectedSubscriber };

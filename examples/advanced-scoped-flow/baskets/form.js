@@ -35,9 +35,12 @@ const actions = {
   },
 };
 
-const { Subscriber: FormYield, Scope: FormScope } = createComponents({
+const {
+  Subscriber: FormSubscriber,
+  Container: FormContainer,
+} = createComponents<State, typeof actions>({
   name: 'form',
   defaultState,
   actions,
 });
-export { FormYield, FormScope };
+export { FormSubscriber, FormContainer };

@@ -13,7 +13,7 @@ type SetState<ST> = ($Shape<ST>) => void;
 type GetState<ST> = () => $ReadOnly<ST>;
 type BasketStoreUnsubscribe = () => void;
 
-type YieldRenderPropFunction<S, A> = ($Exact<$ReadOnly<S>> & $Exact<A>) => Node;
+type RenderPropComponent<S, A> = ($Exact<$ReadOnly<S>> & $Exact<A>) => Node;
 
 export type Basket<ST, AC> = {|
   key: string[],
@@ -42,8 +42,8 @@ export type BasketInstance<ST, AC> = {
 
 declare export class Registry {
   configure: ({
-    initialStates: { [key: string]: Object },
-    actionExtraArgument: any,
+    initialStates?: { [key: string]: Object },
+    actionExtraArgument?: any,
   }) => void;
   baskets: Map<string, BasketInstance<any, any>>;
   initBasket: <ST, AC>(key: string, Basket<ST, AC>) => BasketInstance<ST, AC>;
@@ -58,7 +58,7 @@ declare export var defaultRegistry: Registry;
 
 declare export class AdoneProvider extends React$Component<
   {
-    initialStates?: {},
+    initialStates?: { [key: string]: Object },
     actionExtraArgument?: any,
   },
   {
@@ -85,16 +85,20 @@ declare export function createComponents<ST, AC>({
   actions: AC,
   name?: string,
 }): {
+  Container: React$ComponentType<{ id?: string }>,
   Subscriber: React$ComponentType<{
-    children: YieldRenderPropFunction<ST, AC>,
+    children: RenderPropComponent<ST, AC>,
   }>,
-  Scope: React$ComponentType<{ id?: string }>,
 };
 
-declare export function createSelector<ST, AC, SE>(
-  Subscriber: React$ComponentType<{
-    children: YieldRenderPropFunction<ST, AC>,
-  }>,
-  selector: (ST) => SE,
+declare export function createSelector<SE, AC>(
+  Subscriber: React$ComponentType<any>,
+  selector: (state: any) => SE,
   displayName?: string
-): React$ComponentType<{ children: YieldRenderPropFunction<SE, AC> }>;
+): React$ComponentType<{ children: RenderPropComponent<SE, AC> }>;
+
+declare export function createSelector<AC>(
+  Subscriber: React$ComponentType<any>,
+  selector: null,
+  displayName?: string
+): React$ComponentType<{ children: RenderPropComponent<{}, AC> }>;

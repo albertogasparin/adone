@@ -10,7 +10,7 @@ export default class Subscriber extends Component {
   };
 
   static basketType = null;
-  static selector = null;
+  static selector = state => state;
 
   basket = null;
   subscription = null;
@@ -49,7 +49,7 @@ export default class Subscriber extends Component {
     // overwise react will fallback to the default ctx value
     this.basket = fromContext ? this.getInstanceFromContext() : this.basket;
     const state = this.basket.store.getState();
-    return selector ? selector(state, props) : state;
+    return selector ? selector(state, props) : {};
   }
 
   getInstanceFromContext() {
@@ -79,6 +79,13 @@ export default class Subscriber extends Component {
     if (!this.basket) return;
     const prevState = this.state;
     const nextState = this.getBasketState();
+<<<<<<< HEAD
+=======
+    // we could call setState but in reality we use state only for
+    // better dev experience, so assigning it sync and calling forceUpdate
+    // is harmless (ReactFiberNewContext uses FU too)
+    this.state = nextState;
+>>>>>>> bcde021... Redefine components creators and naming
     if (!shallowEqual(prevState, nextState)) {
       this.setState(nextState);
     }
@@ -87,7 +94,7 @@ export default class Subscriber extends Component {
   render() {
     // Get fresh state at every re-render, so if a parent triggers
     // a re-render before the componet subscription calls onUpdate()
-    // we already serve the updated state and skip an additional render
+    // we already serve the updated state and skip the additional render
     this.state = this.getBasketState(true);
     return this.props.children({ ...this.state, ...this.basket.actions });
   }

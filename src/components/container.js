@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Provider, readContext } from '../context';
 import BasketRegistry from '../registry';
 
-export default class Scope extends Component {
+export default class Container extends Component {
   static propTypes = {
     children: PropTypes.node,
     scope: PropTypes.string,

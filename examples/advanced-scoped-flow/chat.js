@@ -1,22 +1,22 @@
 // @flow
 import React, { Component } from 'react';
 
-import { FormYield, FormScope } from './baskets/form';
-import { MessagesYield } from './baskets/messages';
-import { ThemeScope, ThemeYield } from './baskets/theme';
+import { FormSubscriber, FormContainer } from './baskets/form';
+import { MessagesSubscriber } from './baskets/messages';
+import { ThemeContainer, ThemeSubscriber } from './baskets/theme';
 
 export default class Chat extends Component<{ id: string }> {
   render() {
     return (
-      <ThemeScope scope={this.props.id}>
-        <ThemeYield>
+      <ThemeContainer scope={this.props.id}>
+        <ThemeSubscriber>
           {({ color, change }) => (
             <div style={{ background: color }}>
               <h2>Chat</h2>
               <button onClick={() => change('#DFF')}>Theme 1</button>
               <button onClick={() => change('#FDF')}>Theme 2</button>
               <button onClick={() => change('#FFD')}>Theme 3</button>
-              <MessagesYield>
+              <MessagesSubscriber>
                 {({ data, add }) => (
                   <div>
                     <ul>
@@ -24,14 +24,15 @@ export default class Chat extends Component<{ id: string }> {
                         <li key={i}>{m}</li>
                       ))}
                     </ul>
-                    <FormScope>
-                      <FormYield>
+                    <FormContainer>
+                      <FormSubscriber>
                         {({ isValid, message, isSending, input, send }) => (
                           <form
                             action="#"
-                            onSubmit={() =>
-                              send(message).then(() => add(message))
-                            }
+                            onSubmit={ev => {
+                              ev.preventDefault();
+                              send(message).then(() => add(message));
+                            }}
                           >
                             <textarea
                               value={message}
@@ -43,15 +44,15 @@ export default class Chat extends Component<{ id: string }> {
                             </button>
                           </form>
                         )}
-                      </FormYield>
-                    </FormScope>
+                      </FormSubscriber>
+                    </FormContainer>
                   </div>
                 )}
-              </MessagesYield>
+              </MessagesSubscriber>
             </div>
           )}
-        </ThemeYield>
-      </ThemeScope>
+        </ThemeSubscriber>
+      </ThemeContainer>
     );
   }
 }

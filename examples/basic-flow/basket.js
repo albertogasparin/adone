@@ -18,9 +18,11 @@ const actions = {
   },
 };
 
-const { Subscriber: CountYield } = createComponents({
-  defaultState,
-  actions,
-});
+const { Subscriber: CountSubscriber } = createComponents<State, typeof actions>(
+  {
+    defaultState,
+    actions,
+  }
+);
 
-export { CountYield };
+export { CountSubscriber };

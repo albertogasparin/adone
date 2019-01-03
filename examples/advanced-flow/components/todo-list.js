@@ -1,8 +1,8 @@
 // @flow
 import React, { Component } from 'react';
 
-import { UserSelectedState } from '../baskets/user';
-import { TodoYield } from '../baskets/todo';
+import { UserSelectedSubscriber } from '../baskets/user';
+import { TodoSubscriber } from '../baskets/todo';
 import { type TodoModel } from '../baskets/todo/types';
 
 type TodoItemProps = {
@@ -48,10 +48,10 @@ class TodoList extends Component<TodoListProps> {
   }
 }
 
-const YieldedTodoList = () => (
-  <UserSelectedState>
+const SubscribedTodoList = () => (
+  <UserSelectedSubscriber>
     {({ sel }) => (
-      <TodoYield>
+      <TodoSubscriber>
         {({ data, loading, load }) => (
           <TodoList
             todos={data || []}
@@ -60,9 +60,9 @@ const YieldedTodoList = () => (
             selectedUser={sel}
           />
         )}
-      </TodoYield>
+      </TodoSubscriber>
     )}
-  </UserSelectedState>
+  </UserSelectedSubscriber>
 );
 
-export default YieldedTodoList;
+export default SubscribedTodoList;

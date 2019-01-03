@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import { CountYield } from './basket';
+import { CountSubscriber } from './basket';
 
 /**
  * Main App
@@ -13,14 +13,14 @@ class App extends Component<{}> {
       <div>
         <h1>Counter example</h1>
         <main>
-          <CountYield>
+          <CountSubscriber>
             {({ count, increment }) => (
               <div>
                 <p>{count}</p>
                 <button onClick={increment}>+1</button>
               </div>
             )}
-          </CountYield>
+          </CountSubscriber>
         </main>
       </div>
     );

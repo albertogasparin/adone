@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { shallow, mount } from 'enzyme';
 
 import { basketMock, storeMock } from '../../__tests__/mocks';
-import Subscriber from '../subscriber';
+import SubscriberComponent from '../subscriber';
 import AdoneProvider from '../provider';
 import { defaultRegistry } from '../../registry';
 
@@ -20,9 +20,10 @@ jest.mock('../../registry', () => {
   };
 });
 
+let Subscriber;
+
 describe('Subscriber', () => {
   const children = jest.fn().mockReturnValue(null);
-  Subscriber.basketType = basketMock;
 
   const modes = {
     withProvider: (props = {}) => {
@@ -60,6 +61,8 @@ describe('Subscriber', () => {
     const setup = modes[key];
     describe(key, () => {
       beforeEach(() => {
+        Subscriber = class extends SubscriberComponent {};
+        Subscriber.basketType = basketMock;
         defaultRegistry.getBasket.mockReturnValue({
           store: storeMock,
           actions: basketMock.actions,

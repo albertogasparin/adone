@@ -10,9 +10,9 @@ const defaultState: State = {
   loading: false,
 };
 
-const { Subscriber: TodoYield } = createComponents({
+const { Subscriber: TodoSubscriber } = createComponents<State, typeof actions>({
   defaultState,
   actions,
 });
 
-export { TodoYield };
+export { TodoSubscriber };
