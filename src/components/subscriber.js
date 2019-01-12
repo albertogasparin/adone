@@ -79,13 +79,6 @@ export default class Subscriber extends Component {
     if (!this.basket) return;
     const prevState = this.state;
     const nextState = this.getBasketState();
-<<<<<<< HEAD
-=======
-    // we could call setState but in reality we use state only for
-    // better dev experience, so assigning it sync and calling forceUpdate
-    // is harmless (ReactFiberNewContext uses FU too)
-    this.state = nextState;
->>>>>>> bcde021... Redefine components creators and naming
     if (!shallowEqual(prevState, nextState)) {
       this.setState(nextState);
     }
