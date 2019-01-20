@@ -6,12 +6,14 @@ type State = {
   message: string,
   isValid: boolean,
   isSending: boolean,
+  toUsers: number,
 };
 
 const defaultState: State = {
   message: '',
   isValid: false,
   isSending: false,
+  toUsers: 0,
 };
 
 const actions = {
@@ -42,5 +44,8 @@ const {
   name: 'form',
   defaultState,
   actions,
+  onContainerUpdate: (state, variables) => {
+    return { ...state, toUsers: variables.remoteUsers };
+  },
 });
 export { FormSubscriber, FormContainer };

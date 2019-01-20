@@ -12,10 +12,14 @@ defaults.devtools = true;
 /**
  * Main App
  */
-class App extends Component<{}, { reset: number, remount: number }> {
+class App extends Component<
+  {},
+  { reset: number, remount: number, remoteUsers: number }
+> {
   state = {
     reset: 0,
     remount: 0,
+    remoteUsers: 20,
   };
 
   reset = () => {
@@ -28,16 +32,32 @@ class App extends Component<{}, { reset: number, remount: number }> {
     this.setState({ remount });
   };
 
+  componentDidMount() {
+    setInterval(() => {
+      const remoteUsers = this.state.remoteUsers + ~~(Math.random() * 10 - 5);
+      this.setState({ remoteUsers });
+    }, 5000);
+  }
+
   render() {
-    const { reset, remount } = this.state;
+    const { reset, remount, remoteUsers } = this.state;
     return (
       <div>
         <h1>Chat example</h1>
         <button onClick={this.reset}>Reset theme (scope id change)</button>
         <button onClick={this.remount}>Reset form (local scope remount)</button>
         <main>
-          <Chat key={String(remount)} id={String(reset)} />
-          <Chat key={String(remount + 1)} id={String(reset + 1)} />
+          <Chat
+            key={String(remount)}
+            id={String(reset)}
+            remoteUsers={remoteUsers}
+            defaultColor="#FED"
+          />
+          <Chat
+            key={String(remount + 1)}
+            id={String(reset + 1)}
+            remoteUsers={remoteUsers}
+          />
         </main>
       </div>
     );

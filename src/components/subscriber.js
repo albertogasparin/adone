@@ -30,6 +30,8 @@ export default class Subscriber extends Component {
   }
 
   componentDidUpdate() {
+    // ensure subscription is still to the correct basket
+    // as parent scope might change between renders
     this.subscribeToUpdates();
   }
 
@@ -76,9 +78,11 @@ export default class Subscriber extends Component {
   }
 
   onUpdate = () => {
+    // Ensure component is still mounted and has a basket attached
     if (!this.basket) return;
     const prevState = this.state;
     const nextState = this.getBasketState();
+    // Only update if state changed
     if (!shallowEqual(prevState, nextState)) {
       this.setState(nextState);
     }

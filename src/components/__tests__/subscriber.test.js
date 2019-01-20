@@ -102,13 +102,12 @@ describe('Subscriber', () => {
       it('should update when store calls update listener', () => {
         const { getMount } = setup();
         const instance = getMount().instance();
-        instance.setState = jest.fn();
         storeMock.getState.mockReturnValue({ count: 1 });
         instance.onUpdate();
-        expect(instance.setState).toHaveBeenCalledWith({ count: 1 });
+        expect(instance.state).toEqual({ count: 1 });
       });
 
-      it('should avoid re-render children just rendered from parent update', () => {
+      it.only('should avoid re-render children when just rendered from parent update', () => {
         const { getElement, children } = setup();
         class App extends Component<{}> {
           render() {

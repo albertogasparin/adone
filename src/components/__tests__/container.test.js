@@ -26,10 +26,19 @@ jest.mock('../../registry', () => ({
 const { Subscriber, Container } = createComponents({
   defaultState: basketMock.defaultState,
   actions: basketMock.actions,
+  onContainerInit: jest.fn(),
+  onContainerUpdate: jest.fn(),
 });
 
 describe('Scope', () => {
   describe('render', () => {
+    beforeEach(() => {
+      defaultRegistry.getBasket.mockReturnValue({
+        store: storeMock,
+        actions: basketMock.actions,
+      });
+    });
+
     it('should render context provider with value prop and children', () => {
       const children = <div />;
       const wrapper = shallow(<Container>{children}</Container>);
@@ -39,6 +48,8 @@ describe('Scope', () => {
         value: {
           getBasket: expect.any(Function),
           globalRegistry: expect.any(Object),
+          basketType: expect.any(Object),
+          scopedBasketInitialized: expect.any(Object),
         },
       });
     });
@@ -127,6 +138,41 @@ describe('Scope', () => {
         Subscriber.basketType,
         's1'
       );
+    });
+
+    it('should call basket onContainerInit on first render', () => {
+      Container.basketType.onContainerInit.mockReturnValueOnce({ count: 5 });
+      storeMock.mutator.mockReturnValueOnce({ count: 5 });
+      const renderPropChildren = jest.fn().mockReturnValue(null);
+      const children = <Subscriber>{renderPropChildren}</Subscriber>;
+      mount(<Container variables={{ defaultCount: 5 }}>{children}</Container>);
+      expect(Container.basketType.onContainerInit).toHaveBeenCalledWith(
+        { count: 0 },
+        { defaultCount: 5 }
+      );
+      expect(storeMock.mutator).toHaveBeenCalledTimes(1);
+      expect(Container.basketType.onContainerUpdate).not.toHaveBeenCalled();
+      expect(storeMock.setState).toHaveBeenCalledWith({ count: 5 });
+    });
+
+    it('should call basket onContainerUpdate on re-render but not propagate update if state result not changed', () => {
+      Container.basketType.onContainerInit.mockReturnValueOnce({ count: 5 });
+      storeMock.mutator.mockReturnValueOnce({ count: 5 });
+      const renderPropChildren = jest.fn().mockReturnValue(null);
+      const children = <Subscriber>{renderPropChildren}</Subscriber>;
+      const wrapper = mount(
+        <Container variables={{ defaultCount: 5 }}>{children}</Container>
+      );
+      Container.basketType.onContainerUpdate.mockReturnValueOnce({ count: 6 });
+      storeMock.mutator.mockReturnValueOnce({ count: 6 });
+      wrapper.setProps({ variables: { defaultCount: 6 } });
+      expect(Container.basketType.onContainerInit).toHaveBeenCalledTimes(1);
+      expect(Container.basketType.onContainerUpdate).toHaveBeenCalledWith(
+        { count: 0 },
+        { defaultCount: 6 }
+      );
+      expect(storeMock.mutator).toHaveBeenCalledTimes(2);
+      expect(storeMock.setState).toHaveBeenCalledWith({ count: 6 });
     });
   });
 });

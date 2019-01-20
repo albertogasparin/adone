@@ -25,6 +25,9 @@ const {
   name: 'theme',
   defaultState,
   actions,
+  onContainerInit: (state, variables) => {
+    return { ...state, color: variables.defaultColor };
+  },
 });
 
 export { ThemeSubscriber, ThemeContainer };

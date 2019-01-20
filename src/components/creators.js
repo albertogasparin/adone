@@ -14,7 +14,13 @@ const createContainer = basketType =>
     static displayName = `Container(${basketType.key[0]})`;
   };
 
-export function createComponents({ name = '', defaultState, actions }) {
+export function createComponents({
+  name = '',
+  defaultState,
+  actions,
+  onContainerInit,
+  onContainerUpdate,
+}) {
   const src = !name
     ? Object.keys(actions).reduce((acc, k) => acc + actions[k].toString(), '')
     : '';
@@ -22,6 +28,8 @@ export function createComponents({ name = '', defaultState, actions }) {
     key: [name, hash(src + JSON.stringify(defaultState))].filter(Boolean),
     defaultState,
     actions,
+    onContainerInit,
+    onContainerUpdate,
   };
   return {
     Container: createContainer(rawBasket),

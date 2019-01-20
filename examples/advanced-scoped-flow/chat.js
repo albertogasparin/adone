@@ -5,10 +5,15 @@ import { FormSubscriber, FormContainer } from './baskets/form';
 import { MessagesSubscriber } from './baskets/messages';
 import { ThemeContainer, ThemeSubscriber } from './baskets/theme';
 
-export default class Chat extends Component<{ id: string }> {
+export default class Chat extends Component<{
+  id: string,
+  remoteUsers: number,
+  defaultColor?: string,
+}> {
   render() {
+    let { id, defaultColor, remoteUsers } = this.props;
     return (
-      <ThemeContainer scope={this.props.id}>
+      <ThemeContainer scope={id} variables={{ defaultColor }}>
         <ThemeSubscriber>
           {({ color, change }) => (
             <div style={{ background: color }}>
@@ -24,9 +29,16 @@ export default class Chat extends Component<{ id: string }> {
                         <li key={i}>{m}</li>
                       ))}
                     </ul>
-                    <FormContainer>
+                    <FormContainer variables={{ remoteUsers }}>
                       <FormSubscriber>
-                        {({ isValid, message, isSending, input, send }) => (
+                        {({
+                          isValid,
+                          message,
+                          isSending,
+                          toUsers,
+                          input,
+                          send,
+                        }) => (
                           <form
                             action="#"
                             onSubmit={ev => {
@@ -40,7 +52,7 @@ export default class Chat extends Component<{ id: string }> {
                               onChange={ev => input(ev.target.value)}
                             />
                             <button disabled={!isValid || isSending}>
-                              {isSending ? '...' : 'Send'}
+                              {isSending ? '...' : `Send to ${toUsers}`}
                             </button>
                           </form>
                         )}

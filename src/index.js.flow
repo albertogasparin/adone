@@ -77,7 +77,7 @@ export type Middleware = (
 declare export var defaults: {
   devtools: boolean,
   middlewares: Set<Middleware>,
-  mutator: <ST>(prevState: ST, partialState: *) => ST,
+  mutator: <ST>(prevState: ST, partialState: $Shape<ST>) => ST,
 };
 
 declare export function createComponents<ST, AC>({
@@ -86,6 +86,19 @@ declare export function createComponents<ST, AC>({
   name?: string,
 }): {
   Container: React$ComponentType<{ id?: string }>,
+  Subscriber: React$ComponentType<{
+    children: RenderPropComponent<ST, AC>,
+  }>,
+};
+
+declare export function createComponents<ST, AC, VA>({
+  defaultState: ST,
+  actions: AC,
+  name?: string,
+  onContainerInit?: (state: ST, variables: VA) => $Shape<ST>,
+  onContainerUpdate?: (state: ST, variables: VA) => $Shape<ST>,
+}): {
+  Container: React$ComponentType<{ id?: string, variables?: VA }>,
   Subscriber: React$ComponentType<{
     children: RenderPropComponent<ST, AC>,
   }>,
