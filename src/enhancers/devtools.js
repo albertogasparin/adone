@@ -6,7 +6,7 @@ const connectDevTools = store => {
   });
   devTools.init(store.getState());
   devTools.subscribe(message => {
-    if (message.type === 'DISPATCH') {
+    if (message.type === 'DISPATCH' && message.state) {
       store.setState(JSON.parse(message.state));
     }
   });
