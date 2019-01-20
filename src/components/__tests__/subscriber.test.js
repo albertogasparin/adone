@@ -107,7 +107,7 @@ describe('Subscriber', () => {
         expect(instance.state).toEqual({ count: 1 });
       });
 
-      it.only('should avoid re-render children when just rendered from parent update', () => {
+      it('should avoid re-render children when just rendered from parent update', () => {
         const { getElement, children } = setup();
         class App extends Component<{}> {
           render() {
