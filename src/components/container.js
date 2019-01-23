@@ -60,6 +60,7 @@ export default class Container extends Component {
       getBasket: (basket, scope) =>
         this.getScopedBasket(basket, scope) || ctx.getBasket(basket),
       // stored to make them available in getDerivedStateFromProps
+      // as js context there is null https://github.com/facebook/react/issues/12612
       basketType: this.constructor.basketType,
       scopedBasketInitialized: {},
     };

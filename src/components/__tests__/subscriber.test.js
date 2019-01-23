@@ -145,7 +145,7 @@ describe('Subscriber', () => {
         expect(unsubscribeMock).toHaveBeenCalled();
       });
 
-      it('should render children with pick return value', () => {
+      it('should render children with selected return value', () => {
         Subscriber.selector = jest.fn().mockReturnValue({ foo: 1 });
         const { getMount, children } = setup({ prop: 1 });
         getMount();
@@ -158,6 +158,16 @@ describe('Subscriber', () => {
           increase: expect.any(Function),
           decrease: expect.any(Function),
         });
+        Subscriber.selector = undefined;
+      });
+
+      it('should call selector and children only once if state is equal', () => {
+        Subscriber.selector = jest.fn().mockReturnValue({ foo: 1 });
+        const { getMount, children } = setup({ prop: 1 });
+        const instance = getMount().instance();
+        instance.onUpdate();
+        expect(children).toHaveBeenCalledTimes(1);
+        expect(Subscriber.selector).toHaveBeenCalledTimes(1);
         Subscriber.selector = undefined;
       });
     });

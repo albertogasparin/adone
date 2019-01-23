@@ -15,7 +15,7 @@ const TodoItem = ({ todo }: TodoItemProps) => (
 
 type TodoListProps = {
   selectedUser: ?string,
-  todos: TodoModel[],
+  todos: TodoModel[] | null,
   loading: boolean,
   onLoad: (uid: string) => any,
 };
@@ -30,7 +30,7 @@ class TodoList extends Component<TodoListProps> {
   render() {
     const { todos, loading, selectedUser } = this.props;
 
-    if (!selectedUser || loading) {
+    if (!selectedUser || !todos || loading) {
       return (
         <div className="TodoList">
           {loading ? 'Loading...' : 'Select a user first'}
@@ -54,7 +54,7 @@ const SubscribedTodoList = () => (
       <TodoSubscriber>
         {({ data, loading, load }) => (
           <TodoList
-            todos={data || []}
+            todos={data}
             loading={loading}
             onLoad={load}
             selectedUser={sel}

@@ -2,7 +2,7 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { readContext } from '../context';
-import shallowEqual from '../utils/shallow-equal';
+import memoize from '../utils/memoize';
 
 export default class Subscriber extends Component {
   static propTypes = {
@@ -14,7 +14,8 @@ export default class Subscriber extends Component {
 
   basket = null;
   subscription = null;
-  state = null;
+  state = {};
+  selector = this.constructor.selector && memoize(this.constructor.selector);
 
   componentDidMount() {
     // As suggested by the async docs, we add listener after mount
@@ -46,12 +47,11 @@ export default class Subscriber extends Component {
   getBasketState(fromContext = false) {
     // eslint-disable-next-line no-unused-vars
     const { children, ...props } = this.props;
-    const { selector } = this.constructor;
     // We can get baskets from context ONLY during rendering phase
     // overwise react will fallback to the default ctx value
     this.basket = fromContext ? this.getInstanceFromContext() : this.basket;
     const state = this.basket.store.getState();
-    return selector ? selector(state, props) : {};
+    return this.selector ? this.selector(state, props) : this.state;
   }
 
   getInstanceFromContext() {
@@ -83,7 +83,8 @@ export default class Subscriber extends Component {
     const prevState = this.state;
     const nextState = this.getBasketState();
     // Only update if state changed
-    if (!shallowEqual(prevState, nextState)) {
+    // just check simple equality as shallow check done by memoized selector
+    if (prevState !== nextState) {
       this.setState(nextState);
     }
   };
