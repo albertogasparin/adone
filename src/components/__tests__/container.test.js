@@ -48,8 +48,6 @@ describe('Scope', () => {
         value: {
           getBasket: expect.any(Function),
           globalRegistry: expect.any(Object),
-          basketType: expect.any(Object),
-          scopedBasketInitialized: expect.any(Object),
         },
       });
     });

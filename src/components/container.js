@@ -20,10 +20,10 @@ export default class Container extends Component {
     // we trigger store updates during this phase to avoid double rendering:
     // container gets fresh props, notifies subscribers which will setState
     // but as a render will already happen, we enjoy the batched update
-    const { basketType, getBasket, scopedBasketInitialized } = prevState;
+    const { basketType, api, scopedBasketInitialized } = prevState;
     const { scope, variables } = nextProps;
     // we explicitly pass scope as it might be changed
-    const { store } = getBasket(basketType, scope);
+    const { store } = api.getBasket(basketType, scope);
     const isInitialized = scopedBasketInitialized[store.key];
     const method = !isInitialized ? 'onContainerInit' : 'onContainerUpdate';
 
@@ -56,9 +56,11 @@ export default class Container extends Component {
     });
 
     this.state = {
-      globalRegistry: ctx.globalRegistry,
-      getBasket: (basket, scope) =>
-        this.getScopedBasket(basket, scope) || ctx.getBasket(basket),
+      api: {
+        globalRegistry: ctx.globalRegistry,
+        getBasket: (basket, scope) =>
+          this.getScopedBasket(basket, scope) || ctx.getBasket(basket),
+      },
       // stored to make them available in getDerivedStateFromProps
       // as js context there is null https://github.com/facebook/react/issues/12612
       basketType: this.constructor.basketType,
@@ -78,7 +80,7 @@ export default class Container extends Component {
 
   getRegistry() {
     const isLocal = !this.props.scope && !this.props.global;
-    return isLocal ? this.registry : this.state.globalRegistry;
+    return isLocal ? this.registry : this.state.api.globalRegistry;
   }
 
   getScopedBasket(basket, scopeId = this.props.scope) {
@@ -98,6 +100,6 @@ export default class Container extends Component {
 
   render() {
     const { children } = this.props;
-    return <Provider value={this.state}>{children}</Provider>;
+    return <Provider value={this.state.api}>{children}</Provider>;
   }
 }

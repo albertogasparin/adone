@@ -12,10 +12,31 @@ export default class Subscriber extends Component {
   static basketType = null;
   static selector = state => state;
 
+  static getDerivedStateFromProps(nextProps, prevState) {
+    // Get fresh state at every re-render, so if a parent triggers
+    // a re-render before the component subscription calls onUpdate()
+    // we already serve the updated state and skip the additional render
+    const nextBasketState = prevState.getBasketState(nextProps, true);
+    // just check simple equality as shallow check done by memoized selector
+    if (prevState.basketState !== nextBasketState) {
+      return { basketState: nextBasketState };
+    }
+    return null;
+  }
+
   basket = null;
   subscription = null;
-  state = {};
   selector = this.constructor.selector && memoize(this.constructor.selector);
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      basketState: {},
+      // stored to make them available in getDerivedStateFromProps
+      // as js context there is null https://github.com/facebook/react/issues/12612
+      getBasketState: this.getBasketState,
+    };
+  }
 
   componentDidMount() {
     // As suggested by the async docs, we add listener after mount
@@ -44,17 +65,21 @@ export default class Subscriber extends Component {
     }
   }
 
-  getBasketState(fromContext = false) {
+  getBasketState = (nextProps = this.props, fromContext = false) => {
     // eslint-disable-next-line no-unused-vars
-    const { children, ...props } = this.props;
+    const { children, ...props } = nextProps;
     // We can get baskets from context ONLY during rendering phase
-    // overwise react will fallback to the default ctx value
-    this.basket = fromContext ? this.getInstanceFromContext() : this.basket;
-    const state = this.basket.store.getState();
-    return this.selector ? this.selector(state, props) : this.state;
-  }
+    // overwise React will return the default ctx value!
+    this.basket = fromContext
+      ? this.getBasketInstanceFromContext()
+      : this.basket;
+    const basketState = this.basket.store.getState();
+    return this.selector
+      ? this.selector(basketState, props)
+      : this.state.basketState;
+  };
 
-  getInstanceFromContext() {
+  getBasketInstanceFromContext() {
     const { basketType } = this.constructor;
     // We use React context just to get the baskets registry
     // then we rely on our internal pub/sub to get updates
@@ -80,20 +105,19 @@ export default class Subscriber extends Component {
   onUpdate = () => {
     // Ensure component is still mounted and has a basket attached
     if (!this.basket) return;
-    const prevState = this.state;
-    const nextState = this.getBasketState();
+    const prevBasketState = this.state.basketState;
+    const nextBasketState = this.getBasketState();
     // Only update if state changed
     // just check simple equality as shallow check done by memoized selector
-    if (prevState !== nextState) {
-      this.setState(nextState);
+    if (prevBasketState !== nextBasketState) {
+      this.setState({ basketState: nextBasketState });
     }
   };
 
   render() {
-    // Get fresh state at every re-render, so if a parent triggers
-    // a re-render before the componet subscription calls onUpdate()
-    // we already serve the updated state and skip the additional render
-    this.state = this.getBasketState(true);
-    return this.props.children({ ...this.state, ...this.basket.actions });
+    return this.props.children({
+      ...this.state.basketState,
+      ...this.basket.actions,
+    });
   }
 }

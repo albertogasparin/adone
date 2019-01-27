@@ -24,6 +24,10 @@ let Subscriber;
 
 describe('Subscriber', () => {
   const children = jest.fn().mockReturnValue(null);
+  const actions = {
+    increase: expect.any(Function),
+    decrease: expect.any(Function),
+  };
 
   const modes = {
     withProvider: (props = {}) => {
@@ -92,19 +96,16 @@ describe('Subscriber', () => {
         const { getShallow, children } = setup();
         getShallow();
         expect(children).toHaveBeenCalledTimes(1);
-        expect(children).toHaveBeenCalledWith({
-          count: 0,
-          increase: expect.any(Function),
-          decrease: expect.any(Function),
-        });
+        expect(children).toHaveBeenCalledWith({ count: 0, ...actions });
       });
 
       it('should update when store calls update listener', () => {
-        const { getMount } = setup();
+        const { getMount, children } = setup();
         const instance = getMount().instance();
         storeMock.getState.mockReturnValue({ count: 1 });
         instance.onUpdate();
-        expect(instance.state).toEqual({ count: 1 });
+        expect(children).toHaveBeenCalledTimes(2);
+        expect(children).toHaveBeenCalledWith({ count: 1, ...actions });
       });
 
       it('should avoid re-render children when just rendered from parent update', () => {
@@ -125,11 +126,7 @@ describe('Subscriber', () => {
 
         expect(storeMock.getState).toHaveBeenCalledTimes(4);
         expect(children).toHaveBeenCalledTimes(2);
-        expect(children).toHaveBeenLastCalledWith({
-          count: 1,
-          increase: expect.any(Function),
-          decrease: expect.any(Function),
-        });
+        expect(children).toHaveBeenCalledWith({ count: 1, ...actions });
       });
 
       it('should remove listener from store on unmount', () => {
@@ -153,21 +150,28 @@ describe('Subscriber', () => {
           basketMock.defaultState,
           { prop: 1 }
         );
-        expect(children).toHaveBeenCalledWith({
-          foo: 1,
-          increase: expect.any(Function),
-          decrease: expect.any(Function),
-        });
+        expect(children).toHaveBeenCalledWith({ foo: 1, ...actions });
         Subscriber.selector = undefined;
       });
 
-      it('should call selector and children only once if state is equal', () => {
+      it('should not update on state change if selector output is equal', () => {
         Subscriber.selector = jest.fn().mockReturnValue({ foo: 1 });
         const { getMount, children } = setup({ prop: 1 });
         const instance = getMount().instance();
         instance.onUpdate();
         expect(children).toHaveBeenCalledTimes(1);
+        // make sure memoisation works as expected
         expect(Subscriber.selector).toHaveBeenCalledTimes(1);
+        Subscriber.selector = undefined;
+      });
+
+      it('should not update on state change if selector is null', () => {
+        Subscriber.selector = null;
+        const { getMount, children } = setup({ prop: 1 });
+        const instance = getMount().instance();
+        instance.onUpdate();
+        expect(children).toHaveBeenCalledTimes(1);
+        expect(children).toHaveBeenCalledWith({ ...actions });
         Subscriber.selector = undefined;
       });
     });
