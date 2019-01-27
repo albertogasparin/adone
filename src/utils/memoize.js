@@ -1,19 +1,21 @@
 // Mostly copied from https://github.com/alexreardon/memoize-one
+// manually optimised shallow check 2 args
 
 import shallowEqual from './shallow-equal';
 
-// Shallow comparing arguments, so if arg objects instances are different
-// but contents are the same we still get the momoized value
+// Shallow comparing 2 arguments, so if arg objects instances are different
+// but contents are the same we still get the memoized value
 const argumentsEqual = (newArgs, lastArgs) =>
-  newArgs.length === lastArgs.length &&
-  newArgs.every((newArg, index) => shallowEqual(newArg, lastArgs[index]));
+  shallowEqual(newArgs[0], lastArgs[0]) &&
+  shallowEqual(newArgs[1], lastArgs[1]);
 
 export default function(resultFn) {
   let lastArgs = [];
   let lastResult;
   let calledOnce = false;
 
-  const result = function(...newArgs) {
+  const result = function(argA, argB) {
+    const newArgs = [argA, argB];
     if (calledOnce && argumentsEqual(newArgs, lastArgs)) {
       return lastResult;
     }
