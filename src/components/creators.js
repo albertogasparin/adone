@@ -18,8 +18,8 @@ export function createComponents({
   name = '',
   defaultState,
   actions,
-  onContainerInit,
-  onContainerUpdate,
+  onContainerInit = null,
+  onContainerUpdate = null,
 }) {
   const src = !name
     ? Object.keys(actions).reduce((acc, k) => acc + actions[k].toString(), '')

@@ -110,7 +110,7 @@ describe('Subscriber', () => {
 
       it('should avoid re-render children when just rendered from parent update', () => {
         const { getElement, children } = setup();
-        class App extends Component<{}> {
+        class App extends Component {
           render() {
             return getElement();
           }

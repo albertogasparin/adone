@@ -102,11 +102,11 @@ export default class Subscriber extends Component {
     }
   }
 
-  onUpdate = () => {
+  onUpdate = basketState => {
     // Ensure component is still mounted and has a basket attached
     if (!this.basket) return;
     const prevBasketState = this.state.basketState;
-    const nextBasketState = this.getBasketState();
+    const nextBasketState = basketState || this.getBasketState();
     // Only update if state changed
     // just check simple equality as shallow check done by memoized selector
     if (prevBasketState !== nextBasketState) {

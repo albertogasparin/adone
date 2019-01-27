@@ -12,11 +12,13 @@ function createStore(key, initialState) {
     },
     setState(nextState) {
       currentState = nextState;
-      listeners.forEach(listener => listener());
+      for (let i = 0, l = listeners.length; i < l; i++) {
+        listeners[i](currentState);
+      }
     },
     subscribe(listener) {
       listeners.push(listener);
-      return () => {
+      return function unsubscribe() {
         listeners = listeners.filter(fn => fn !== listener);
       };
     },

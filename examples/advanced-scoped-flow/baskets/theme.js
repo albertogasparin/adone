@@ -7,7 +7,7 @@ type State = {
 };
 
 const defaultState: State = {
-  color: '#FFF',
+  color: '',
 };
 
 const actions = {
@@ -26,7 +26,9 @@ const {
   defaultState,
   actions,
   onContainerInit: (state, variables) => {
-    return { ...state, color: variables.defaultColor };
+    // this gets currently called also when component remount
+    // so we have to check state status and apply default only on first mount
+    return { ...state, color: state.color || variables.defaultColor };
   },
 });
 

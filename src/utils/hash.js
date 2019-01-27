@@ -1,7 +1,7 @@
 /* eslint-disable */
 // murmurhash2 via https://github.com/garycourt/murmurhash-js/blob/master/murmurhash2_gc.js
 
-export default function murmurhash2_32_gc(str: string) {
+export default function murmurhash2_32_gc(str) {
   var l = str.length,
     h = l ^ l,
     i = 0,
