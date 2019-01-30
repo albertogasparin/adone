@@ -9,7 +9,7 @@ export default class Container extends Component {
   static propTypes = {
     children: PropTypes.node,
     scope: PropTypes.string,
-    global: PropTypes.bool,
+    isGlobal: PropTypes.bool,
     actionExtraArgument: PropTypes.object,
     variables: PropTypes.object,
   };
@@ -50,7 +50,7 @@ export default class Container extends Component {
       ctx.globalRegistry.actionExtraArgument,
       props.actionExtraArgument
     );
-    this.registry = new BasketRegistry();
+    this.registry = new BasketRegistry('__local__');
     this.registry.configure({
       actionExtraArgument: extraArg,
     });
@@ -79,14 +79,14 @@ export default class Container extends Component {
   }
 
   getRegistry() {
-    const isLocal = !this.props.scope && !this.props.global;
+    const isLocal = !this.props.scope && !this.props.isGlobal;
     return isLocal ? this.registry : this.state.api.globalRegistry;
   }
 
   getScopedBasket(basket, scopeId = this.props.scope) {
     const { basketType } = this.state;
     return basket === basketType
-      ? this.getRegistry().getBasket(basket, scopeId || '__local__')
+      ? this.getRegistry().getBasket(basket, scopeId)
       : null;
   }
 
