@@ -4,7 +4,7 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 
 import { basketMock, storeMock } from '../../__tests__/mocks';
-import { defaultRegistry } from '../../registry';
+import BasketRegistry, { defaultRegistry } from '../../registry';
 import { createComponents } from '../creators';
 
 const mockRegistry = {
@@ -30,15 +30,31 @@ const { Subscriber, Container } = createComponents({
   onContainerUpdate: jest.fn(),
 });
 
-describe('Scope', () => {
-  describe('render', () => {
-    beforeEach(() => {
-      defaultRegistry.getBasket.mockReturnValue({
-        store: storeMock,
-        actions: basketMock.actions,
-      });
-    });
+describe('Container', () => {
+  beforeEach(() => {
+    const getBasketReturn = {
+      store: storeMock,
+      actions: basketMock.actions,
+    };
+    defaultRegistry.getBasket.mockReturnValue(getBasketReturn);
+    mockRegistry.getBasket.mockReturnValue(getBasketReturn);
+    storeMock.getState.mockReturnValue(basketMock.defaultState);
+  });
 
+  describe('constructor', () => {
+    it('should create local basket registry', () => {
+      expect(BasketRegistry).not.toHaveBeenCalled();
+      shallow(
+        <Container>
+          <div />
+        </Container>
+      );
+
+      expect(BasketRegistry).toHaveBeenCalledWith('__local__');
+    });
+  });
+
+  describe('render', () => {
     it('should render context provider with value prop and children', () => {
       const children = <div />;
       const wrapper = shallow(<Container>{children}</Container>);
@@ -54,16 +70,6 @@ describe('Scope', () => {
   });
 
   describe('integration', () => {
-    beforeEach(() => {
-      const getBasketReturn = {
-        store: storeMock,
-        actions: basketMock.actions,
-      };
-      defaultRegistry.getBasket.mockReturnValue(getBasketReturn);
-      mockRegistry.getBasket.mockReturnValue(getBasketReturn);
-      storeMock.getState.mockReturnValue(basketMock.defaultState);
-    });
-
     it('should get basket from global with scope id if matching', () => {
       const children = <Subscriber>{() => null}</Subscriber>;
       const wrapper = mount(<Container scope="s1">{children}</Container>);
@@ -100,9 +106,19 @@ describe('Scope', () => {
       const wrapper = mount(<Container>{children}</Container>);
       expect(wrapper.instance().registry.getBasket).toHaveBeenCalledWith(
         Subscriber.basketType,
-        '__local__'
+        undefined
       );
       expect(defaultRegistry.getBasket).not.toHaveBeenCalled();
+    });
+
+    it('should get basket from global registry when isGlobal is set', () => {
+      const children = <Subscriber>{() => null}</Subscriber>;
+      const wrapper = mount(<Container isGlobal>{children}</Container>);
+      expect(defaultRegistry.getBasket).toHaveBeenCalledWith(
+        Subscriber.basketType,
+        undefined
+      );
+      expect(wrapper.instance().registry.getBasket).not.toHaveBeenCalled();
     });
 
     it('should cleanup from global on unmount if no more listeners', () => {

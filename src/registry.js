@@ -7,6 +7,10 @@ export default class BasketRegistry {
   baskets = new Map();
   initialStates = {};
 
+  constructor(defaultScope = GLOBAL_SCOPE) {
+    this.defaultScope = defaultScope;
+  }
+
   configure = ({ initialStates = {}, actionExtraArgument = {} }) => {
     this.initialStates = initialStates;
     this.actionExtraArgument = actionExtraArgument;
@@ -23,12 +27,12 @@ export default class BasketRegistry {
     return basketInstance;
   };
 
-  getBasket = (basket, scopeId = GLOBAL_SCOPE) => {
+  getBasket = (basket, scopeId = this.defaultScope) => {
     const key = this.generateKey(basket, scopeId);
     return this.baskets.get(key) || this.initBasket(key, basket);
   };
 
-  deleteBasket = (basket, scopeId = GLOBAL_SCOPE) => {
+  deleteBasket = (basket, scopeId = this.defaultScope) => {
     const key = this.generateKey(basket, scopeId);
     this.baskets.delete(key);
   };
