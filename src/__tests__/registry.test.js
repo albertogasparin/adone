@@ -14,6 +14,12 @@ describe('BasketRegistry', () => {
     });
   });
 
+  it('should initialise basket with initial state', () => {
+    const registry = new BasketRegistry();
+    const instance = registry.getBasket(basketMock);
+    expect(instance.store.getState()).toEqual({ count: 0 });
+  });
+
   it('should get an existing basket if no scopeId provided', () => {
     const registry = new BasketRegistry();
     const instance1 = registry.getBasket(basketMock);
@@ -38,7 +44,7 @@ describe('BasketRegistry', () => {
     expect(instance1).not.toBe(instance2);
   });
 
-  it('should get and create a new basket with initial data', () => {
+  it('should get and create a new basket populated from initialStates passed to registry.configure', () => {
     const data = { [basketMock.key + '@__global__']: { count: 1 } };
     const registry = new BasketRegistry();
     registry.configure({ initialStates: data });
@@ -71,7 +77,7 @@ describe('BasketRegistry', () => {
       ]);
     });
 
-    it('should suffix wtih scopeId for scoped baskets', () => {
+    it('should suffix with scopeId for scoped baskets', () => {
       const registry = new BasketRegistry();
       registry.getBasket(basketMock, 's1');
       expect(Array.from(registry.baskets.keys())).toEqual(['basket-key@s1']);

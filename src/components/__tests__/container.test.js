@@ -24,7 +24,7 @@ jest.mock('../../registry', () => ({
 }));
 
 const { Subscriber, Container } = createComponents({
-  defaultState: basketMock.defaultState,
+  initialState: basketMock.initialState,
   actions: basketMock.actions,
   onContainerInit: jest.fn(),
   onContainerUpdate: jest.fn(),
@@ -38,7 +38,8 @@ describe('Container', () => {
     };
     defaultRegistry.getBasket.mockReturnValue(getBasketReturn);
     mockRegistry.getBasket.mockReturnValue(getBasketReturn);
-    storeMock.getState.mockReturnValue(basketMock.defaultState);
+    storeMock.getState.mockReturnValue(basketMock.initialState);
+    jest.clearAllMocks();
   });
 
   describe('constructor', () => {
@@ -83,7 +84,7 @@ describe('Container', () => {
     it('should get closer basket with scope id if matching', () => {
       const children = <Subscriber>{() => null}</Subscriber>;
       const { Container: OtherContainer } = createComponents({
-        defaultState: {},
+        initialState: {},
         actions: {},
       });
       mount(

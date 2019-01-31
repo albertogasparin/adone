@@ -17,9 +17,9 @@ export default class BasketRegistry {
   };
 
   initBasket = (key, basket) => {
-    const { defaultState, actions } = basket;
-    const initialState = this.initialStates[key];
-    const store = createStore(key, initialState || defaultState);
+    const { initialState, actions } = basket;
+    const injectedState = this.initialStates[key];
+    const store = createStore(key, injectedState || initialState);
     const boundActions = bindActions(actions, store, this.actionExtraArgument);
     const basketInstance = { store, actions: boundActions };
 

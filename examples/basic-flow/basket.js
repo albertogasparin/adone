@@ -6,7 +6,7 @@ type State = {
   count: number,
 };
 
-const defaultState: State = {
+const initialState: State = {
   count: 0,
 };
 
@@ -20,7 +20,7 @@ const actions = {
 
 const { Subscriber: CountSubscriber } = createComponents<State, typeof actions>(
   {
-    defaultState,
+    initialState,
     actions,
   }
 );

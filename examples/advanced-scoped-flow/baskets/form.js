@@ -9,7 +9,7 @@ type State = {
   toUsers: number,
 };
 
-const defaultState: State = {
+const initialState: State = {
   message: '',
   isValid: false,
   isSending: false,
@@ -42,7 +42,7 @@ const {
   Container: FormContainer,
 } = createComponents<State, typeof actions>({
   name: 'form',
-  defaultState,
+  initialState,
   actions,
   onContainerUpdate: (state, variables) => {
     return { ...state, toUsers: variables.remoteUsers };

@@ -20,8 +20,8 @@ import { Yield } from 'react-adone';
 const basket = {
   // required and unique
   key: 'counter',
-  // default value of the store on initialisation
-  defaultState = {
+  // value of the store on initialisation
+  initialState = {
     count: 0,
   },
   // actions that trigger store mutation

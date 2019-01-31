@@ -17,7 +17,7 @@ type RenderPropComponent<S, A> = ($Exact<$ReadOnly<S>> & $Exact<A>) => Node;
 
 export type Basket<ST, AC> = {|
   key: string[],
-  defaultState: ST,
+  initialState: ST,
   actions: AC,
 |};
 
@@ -81,7 +81,7 @@ declare export var defaults: {
 };
 
 declare export function createComponents<ST, AC>({
-  defaultState: ST,
+  initialState: ST,
   actions: AC,
   name?: string,
 }): {
@@ -92,7 +92,7 @@ declare export function createComponents<ST, AC>({
 };
 
 declare export function createComponents<ST, AC, VA>({
-  defaultState: ST,
+  initialState: ST,
   actions: AC,
   name?: string,
   onContainerInit?: (state: ST, variables: VA) => $Shape<ST>,
