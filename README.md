@@ -28,7 +28,7 @@ yarn add react-adone
 
 ```js
 // baskets/counter.js
-const defaultState = {
+const initialState = {
   count: 0,
 };
 
@@ -42,7 +42,7 @@ const actions = {
   },
 };
 
-export default { key: 'counter', defaultState, actions };
+export default { key: 'counter', initialState, actions };
 ```
 
 ```js

@@ -6,14 +6,14 @@ import type { State } from './types';
 import * as actions from './actions';
 import * as selectors from './selectors';
 
-const defaultState: State = {
+const initialState: State = {
   selected: null,
   data: null,
   loading: false,
 };
 
 const { Subscriber: UserSubscriber } = createComponents<State, typeof actions>({
-  defaultState,
+  initialState,
   actions,
 });
 

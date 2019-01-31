@@ -64,26 +64,26 @@ const actions = {
 };
 
 // $ExpectError Basket should have key of type string
-basket = { key: 1, defaultState: { count: 0 }, actions };
+basket = { key: 1, initialState: { count: 0 }, actions };
 
-// $ExpectError Basket should have defaultState of type state
-basket = { key: 'bla', defaultState: { bla: 0 }, actions };
+// $ExpectError Basket should have initialState of type state
+basket = { key: 'bla', initialState: { bla: 0 }, actions };
 
-// $ExpectError Basket should have defaultState of type state
-basket = { key: 'bla', defaultState: { count: 0 } };
+// $ExpectError Basket should have initialState of type state
+basket = { key: 'bla', initialState: { count: 0 } };
 
 // $ExpectError Basket should have actions
-basket = { key: 'bla', defaultState: { count: 0 } };
+basket = { key: 'bla', initialState: { count: 0 } };
 
 // Correct
-basket = { key: ['bla'], defaultState: { count: 0 }, actions };
+basket = { key: ['bla'], initialState: { count: 0 }, actions };
 
 /**
  * createComponents types tests
  */
 Cc = createComponents<State, typeof actions>({
   name: 'Type',
-  defaultState: { count: 0 },
+  initialState: { count: 0 },
   actions,
 });
 

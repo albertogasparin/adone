@@ -16,7 +16,7 @@ const createContainer = basketType =>
 
 export function createComponents({
   name = '',
-  defaultState,
+  initialState,
   actions,
   onContainerInit = null,
   onContainerUpdate = null,
@@ -25,8 +25,8 @@ export function createComponents({
     ? Object.keys(actions).reduce((acc, k) => acc + actions[k].toString(), '')
     : '';
   const rawBasket = {
-    key: [name, hash(src + JSON.stringify(defaultState))].filter(Boolean),
-    defaultState,
+    key: [name, hash(src + JSON.stringify(initialState))].filter(Boolean),
+    initialState,
     actions,
     onContainerInit,
     onContainerUpdate,

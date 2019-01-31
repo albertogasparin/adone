@@ -71,7 +71,7 @@ describe('Subscriber', () => {
           store: storeMock,
           actions: basketMock.actions,
         });
-        storeMock.getState.mockReturnValue(basketMock.defaultState);
+        storeMock.getState.mockReturnValue(basketMock.initialState);
       });
 
       it('should get the basket instance from registry', () => {
@@ -147,7 +147,7 @@ describe('Subscriber', () => {
         const { getMount, children } = setup({ prop: 1 });
         getMount();
         expect(Subscriber.selector).toHaveBeenCalledWith(
-          basketMock.defaultState,
+          basketMock.initialState,
           { prop: 1 }
         );
         expect(children).toHaveBeenCalledWith({ foo: 1, ...actions });

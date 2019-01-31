@@ -2,7 +2,7 @@
 
 export const basketMock = {
   key: ['basket-key'],
-  defaultState: { count: 0 },
+  initialState: { count: 0 },
   actions: {
     increase: jest.fn(),
     decrease: jest.fn(),

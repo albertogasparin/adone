@@ -7,7 +7,7 @@ type State = {
   loading: boolean,
 };
 
-const defaultState: State = {
+const initialState: State = {
   data: [],
   loading: false,
 };
@@ -25,7 +25,7 @@ const { Subscriber: MessagesSubscriber } = createComponents<
   typeof actions
 >({
   name: 'messages',
-  defaultState,
+  initialState,
   actions,
 });
 

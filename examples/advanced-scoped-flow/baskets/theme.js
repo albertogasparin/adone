@@ -6,7 +6,7 @@ type State = {
   color: string,
 };
 
-const defaultState: State = {
+const initialState: State = {
   color: '',
 };
 
@@ -23,7 +23,7 @@ const {
   Container: ThemeContainer,
 } = createComponents<State, typeof actions>({
   name: 'theme',
-  defaultState,
+  initialState,
   actions,
   onContainerInit: (state, variables) => {
     // this gets currently called also when component remount
