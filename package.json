@@ -64,7 +64,7 @@
     "flow-copy-source": "~2.0.2",
     "jest": "~23.6.0",
     "prettier": "~1.15.0",
-    "prop-types": "~15.6.2",
+    "prop-types": "~15.7.0",
     "react": "~16.5.2",
     "react-dom": "~16.5.2",
     "webpack": "~4.25.1",
