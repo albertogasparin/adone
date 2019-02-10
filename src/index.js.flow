@@ -43,7 +43,6 @@ export type BasketInstance<ST, AC> = {
 declare export class Registry {
   configure: ({
     initialStates?: { [key: string]: Object },
-    actionExtraArgument?: any,
   }) => void;
   baskets: Map<string, BasketInstance<any, any>>;
   initBasket: <ST, AC>(key: string, Basket<ST, AC>) => BasketInstance<ST, AC>;
@@ -59,7 +58,6 @@ declare export var defaultRegistry: Registry;
 declare export class AdoneProvider extends React$Component<
   {
     initialStates?: { [key: string]: Object },
-    actionExtraArgument?: any,
   },
   {
     globalRegistry: Registry,

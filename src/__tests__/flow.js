@@ -48,19 +48,6 @@ const actions = {
     // correct
     const { count } = state;
   },
-
-  // actionExtraArgument tests
-  double: (): BasketAction<State, ExtraArg> => (
-    setState,
-    getState,
-    extraArg
-  ) => {
-    // $ExpectError extraArg should be of type ExtraArg
-    const bla = extraArg.bla;
-
-    // Correct
-    const { api } = extraArg;
-  },
 };
 
 // $ExpectError Basket should have key of type string
@@ -144,7 +131,7 @@ Test = <TypeSelector>{({ increment }) => increment(1)}</TypeSelector>;
 Test = <Cc.Container id="a">bla</Cc.Container>;
 Test = <Cc.Container>bla</Cc.Container>;
 Test = (
-  <Cc.Container id="a" actionExtraArgument={{ url: '' }}>
+  <Cc.Container id="a" url="">
     bla
   </Cc.Container>
 );
@@ -159,4 +146,3 @@ Test = (
 
 // Correct
 Test = <AdoneProvider initialStates={{ k: {} }}>bla</AdoneProvider>;
-Test = <AdoneProvider actionExtraArgument={{ url: '' }}>bla</AdoneProvider>;

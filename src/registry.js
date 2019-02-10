@@ -11,16 +11,15 @@ export default class BasketRegistry {
     this.defaultScope = defaultScope;
   }
 
-  configure = ({ initialStates = {}, actionExtraArgument = {} }) => {
+  configure = ({ initialStates = {} }) => {
     this.initialStates = initialStates;
-    this.actionExtraArgument = actionExtraArgument;
   };
 
   initBasket = (key, basket) => {
     const { initialState, actions } = basket;
     const injectedState = this.initialStates[key];
     const store = createStore(key, injectedState || initialState);
-    const boundActions = bindActions(actions, store, this.actionExtraArgument);
+    const boundActions = bindActions(actions, store);
     const basketInstance = { store, actions: boundActions };
 
     this.baskets.set(key, basketInstance);
