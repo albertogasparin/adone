@@ -25,7 +25,12 @@ const withDevtools = createStore => (...args) => {
         if (!devTools) {
           devTools = connectDevTools(store);
         }
-        devTools.send(store.mutator._action, store.getState(), {}, store.key);
+        devTools.send(
+          { type: store.mutator._action, payload: arg },
+          store.getState(),
+          {},
+          store.key
+        );
       } catch (err) {
         /* ignore devtools errors */
       }
