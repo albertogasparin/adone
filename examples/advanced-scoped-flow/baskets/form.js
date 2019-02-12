@@ -17,14 +17,14 @@ const initialState: State = {
 };
 
 const actions = {
-  input: (value: string): BasketAction<State> => setState => {
+  input: (value: string): BasketAction<State> => ({ setState }) => {
     setState({
       message: value,
       isValid: value.length > 0,
     });
   },
 
-  send: (message: string): BasketAction<State> => async setState => {
+  send: (message: string): BasketAction<State> => async ({ setState }) => {
     setState({
       isSending: true,
     });

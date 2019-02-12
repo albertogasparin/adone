@@ -13,7 +13,7 @@ const initialState: State = {
 };
 
 const actions = {
-  add: (message: string): BasketAction<State> => (setState, getState) => {
+  add: (message: string): BasketAction<State> => ({ setState, getState }) => {
     setState({
       data: [...getState().data, message],
     });

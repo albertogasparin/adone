@@ -33,7 +33,7 @@ const initialState = {
 };
 
 const actions = {
-  increment: () => (setState, getState) => {
+  increment: () => ({ setState, getState }) => {
     // setState() shallow merge the provider partial state going through middlewares
     // unlike React setState, it is syncronous and accepts just objects
     setState({
