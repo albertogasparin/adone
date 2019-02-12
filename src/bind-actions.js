@@ -1,14 +1,22 @@
-export default function bindActions(actions, store, extraArg) {
+export default function bindActions(
+  actions,
+  store,
+  getContainerProps = () => ({})
+) {
   return Object.keys(actions).reduce((acc, k) => {
-    // Using a wrapped mutator so we can name fn for better debuggability
-    const namedMutator = {
-      [k](arg) {
+    acc[k] = (...args) => {
+      // Setting mutator name so we can log action name for better debuggability
+      const namedMutator = arg => {
         store.mutator._action = k;
         return store.mutator(arg);
-      },
+      };
+      return actions[k](...args)(
+        namedMutator,
+        store.getState,
+        getContainerProps()
+      );
     };
-    acc[k] = (...args) =>
-      actions[k](...args)(namedMutator[k], store.getState, extraArg);
+
     return acc;
   }, {});
 }

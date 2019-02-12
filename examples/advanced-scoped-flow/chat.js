@@ -13,7 +13,7 @@ export default class Chat extends Component<{
   render() {
     let { id, defaultColor, remoteUsers } = this.props;
     return (
-      <ThemeContainer scope={id} variables={{ defaultColor }}>
+      <ThemeContainer scope={id} defaultColor={defaultColor}>
         <ThemeSubscriber>
           {({ color, change }) => (
             <div style={{ background: color }}>
@@ -29,7 +29,7 @@ export default class Chat extends Component<{
                         <li key={i}>{m}</li>
                       ))}
                     </ul>
-                    <FormContainer variables={{ remoteUsers }}>
+                    <FormContainer remoteUsers={remoteUsers}>
                       <FormSubscriber>
                         {({
                           isValid,
