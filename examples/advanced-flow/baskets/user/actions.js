@@ -8,7 +8,10 @@ const USERS: UserModel[] = [
   { id: '2', name: 'Paul' },
 ];
 
-export const load = (): BasketAction<State> => async (setState, getState) => {
+export const load = (): BasketAction<State> => async ({
+  setState,
+  getState,
+}) => {
   if (getState().loading) return;
   setState({
     loading: true,
@@ -21,7 +24,7 @@ export const load = (): BasketAction<State> => async (setState, getState) => {
   });
 };
 
-export const select = (uid: string): BasketAction<State> => setState => {
+export const select = (uid: string): BasketAction<State> => ({ setState }) => {
   setState({
     selected: uid,
   });

@@ -26,8 +26,14 @@ describe('bindActions', () => {
     result.increase(1);
     expect(basketMock.actions.increase).toHaveBeenCalledWith(1);
     expect(actionInner).toHaveBeenCalledWith(
-      expect.any(Function),
-      storeMock.getState,
+      {
+        setState: expect.any(Function),
+        getState: storeMock.getState,
+        actions: expect.objectContaining({
+          increase: expect.any(Function),
+          decrease: expect.any(Function),
+        }),
+      },
       { url: '' }
     );
   });

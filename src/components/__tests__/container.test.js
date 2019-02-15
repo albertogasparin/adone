@@ -197,8 +197,11 @@ describe('Container', () => {
       const { increase } = renderPropChildren.mock.calls[0][0];
       increase();
       expect(actionInner).toHaveBeenCalledWith(
-        expect.any(Function),
-        expect.any(Function),
+        {
+          getState: expect.any(Function),
+          setState: expect.any(Function),
+          actions: expect.any(Object),
+        },
         { defaultCount: 5 }
       );
     });
@@ -213,8 +216,11 @@ describe('Container', () => {
       wrapper.setProps({ defaultCount: 6 });
       increase();
       expect(actionInner).toHaveBeenCalledWith(
-        expect.any(Function),
-        expect.any(Function),
+        {
+          getState: expect.any(Function),
+          setState: expect.any(Function),
+          actions: expect.any(Object),
+        },
         { defaultCount: 6 }
       );
     });

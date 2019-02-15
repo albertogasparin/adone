@@ -11,7 +11,7 @@ const initialState: State = {
 };
 
 const actions = {
-  change: (value: string): BasketAction<State> => setState => {
+  change: (value: string): BasketAction<State> => ({ setState }) => {
     setState({
       color: value,
     });
