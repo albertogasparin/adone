@@ -29,10 +29,13 @@ export type BasketStore<ST> = {|
   mutator: SetState<ST>,
 |};
 
-export type BasketAction<ST, EX = *> = (
-  setState: SetState<ST>,
-  getState: GetState<ST>,
-  extraArg: EX
+export type BasketAction<ST, PR = *> = (
+  {|
+    setState: SetState<ST>,
+    getState: GetState<ST>,
+    actions: { [key: string]: BasketAction<ST, PR> },
+  |},
+  containerProps: PR
 ) => *;
 
 export type BasketInstance<ST, AC> = {

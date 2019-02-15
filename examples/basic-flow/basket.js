@@ -11,7 +11,7 @@ const initialState: State = {
 };
 
 const actions = {
-  increment: (): BasketAction<State> => (setState, getState) => {
+  increment: (): BasketAction<State> => ({ setState, getState }) => {
     setState({
       count: getState().count + 1,
     });

@@ -9,7 +9,9 @@ const TODOS: { [id: string]: TodoModel[] } = {
   '2': [{ title: 'Do the dishes' }],
 };
 
-export const load = (uid: string): BasketAction<State> => async setState => {
+export const load = (uid: string): BasketAction<State> => async ({
+  setState,
+}) => {
   setState({
     loading: true,
     data: null, // reset

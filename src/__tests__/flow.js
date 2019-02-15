@@ -22,7 +22,7 @@ let basket: Basket<State, typeof actions>;
 
 const actions = {
   // setState tests
-  increment: (n: number): BasketAction<State> => setState => {
+  increment: (n: number): BasketAction<State> => ({ setState }) => {
     // $ExpectError setState should be of type State
     setState('');
 
@@ -38,7 +38,7 @@ const actions = {
   },
 
   // GetState tests
-  decrement: (): BasketAction<State> => (setState, getState) => {
+  decrement: (): BasketAction<State> => ({ setState, getState }) => {
     const state = getState();
     // $ExpectError State should be of type State
     const bla = state.bla;
