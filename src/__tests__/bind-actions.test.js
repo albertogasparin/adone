@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import { basketMock, storeMock } from './mocks';
-import bindActions from '../bind-actions';
+import { bindActions } from '../bind-actions';
 import combineMiddlewares from '../middlewares';
 
 jest.mock('../middlewares');

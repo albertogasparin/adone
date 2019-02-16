@@ -22,7 +22,8 @@ const actions = {
 
 const { Subscriber: MessagesSubscriber } = createComponents<
   State,
-  typeof actions
+  typeof actions,
+  void
 >({
   name: 'messages',
   initialState,

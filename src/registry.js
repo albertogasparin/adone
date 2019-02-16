@@ -1,4 +1,4 @@
-import bindActions from './bind-actions';
+import { bindActions } from './bind-actions';
 import createStore from './create-store';
 
 export const GLOBAL_SCOPE = '__global__';

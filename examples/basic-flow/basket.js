@@ -18,11 +18,13 @@ const actions = {
   },
 };
 
-const { Subscriber: CountSubscriber } = createComponents<State, typeof actions>(
-  {
-    initialState,
-    actions,
-  }
-);
+const { Subscriber: CountSubscriber } = createComponents<
+  State,
+  typeof actions,
+  {||}
+>({
+  initialState,
+  actions,
+});
 
 export { CountSubscriber };
