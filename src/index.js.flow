@@ -29,11 +29,11 @@ export type BasketStore<ST> = {|
   mutator: SetState<ST>,
 |};
 
-export type BasketAction<ST, PR = *> = (
+export type BasketAction<ST, PR = *, AC = *> = (
   {|
     setState: SetState<ST>,
     getState: GetState<ST>,
-    actions: { [key: string]: BasketAction<ST, PR> },
+    actions: AC,
   |},
   containerProps: PR
 ) => *;
@@ -81,25 +81,14 @@ declare export var defaults: {
   mutator: <ST>(prevState: ST, partialState: $Shape<ST>) => ST,
 };
 
-declare export function createComponents<ST, AC>({
+declare export function createComponents<ST, AC, PR>({
   initialState: ST,
   actions: AC,
   name?: string,
+  onContainerInit?: () => BasketAction<ST, PR, AC>,
+  onContainerUpdate?: () => BasketAction<ST, PR, AC>,
 }): {
-  Container: React$ComponentType<{ id?: string }>,
-  Subscriber: React$ComponentType<{
-    children: RenderPropComponent<ST, AC>,
-  }>,
-};
-
-declare export function createComponents<ST, AC, VA>({
-  initialState: ST,
-  actions: AC,
-  name?: string,
-  onContainerInit?: (state: ST, variables: VA) => $Shape<ST>,
-  onContainerUpdate?: (state: ST, variables: VA) => $Shape<ST>,
-}): {
-  Container: React$ComponentType<{ id?: string, variables?: VA }>,
+  Container: React$ComponentType<{ scope?: string, isGlobal?: boolean, ...PR }>,
   Subscriber: React$ComponentType<{
     children: RenderPropComponent<ST, AC>,
   }>,

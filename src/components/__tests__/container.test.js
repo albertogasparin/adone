@@ -23,11 +23,13 @@ jest.mock('../../registry', () => ({
   },
 }));
 
+const mockOnContainerInitInner = jest.fn();
+const mockOnContainerUpdateInner = jest.fn();
 const { Subscriber, Container } = createComponents({
   initialState: basketMock.initialState,
   actions: basketMock.actions,
-  onContainerInit: jest.fn(),
-  onContainerUpdate: jest.fn(),
+  onContainerInit: jest.fn().mockReturnValue(mockOnContainerInitInner),
+  onContainerUpdate: jest.fn().mockReturnValue(mockOnContainerUpdateInner),
 });
 
 describe('Container', () => {
@@ -156,36 +158,35 @@ describe('Container', () => {
     });
 
     it('should call basket onContainerInit on first render', () => {
-      Container.basketType.onContainerInit.mockReturnValueOnce({ count: 5 });
-      storeMock.mutator.mockReturnValueOnce({ count: 5 });
       const renderPropChildren = jest.fn().mockReturnValue(null);
       const children = <Subscriber>{renderPropChildren}</Subscriber>;
       mount(<Container defaultCount={5}>{children}</Container>);
-      expect(Container.basketType.onContainerInit).toHaveBeenCalledWith(
-        { count: 0 },
+      expect(mockOnContainerInitInner).toHaveBeenCalledWith(
+        {
+          getState: expect.any(Function),
+          setState: expect.any(Function),
+          actions: expect.any(Object),
+        },
         { defaultCount: 5 }
       );
-      expect(storeMock.mutator).toHaveBeenCalledTimes(1);
-      expect(Container.basketType.onContainerUpdate).not.toHaveBeenCalled();
-      expect(storeMock.setState).toHaveBeenCalledWith({ count: 5 });
+      expect(mockOnContainerInitInner).toHaveBeenCalledTimes(1);
+      expect(mockOnContainerUpdateInner).not.toHaveBeenCalled();
     });
 
-    it('should call basket onContainerUpdate on re-render but not propagate update if state result not changed', () => {
-      Container.basketType.onContainerInit.mockReturnValueOnce({ count: 5 });
-      storeMock.mutator.mockReturnValueOnce({ count: 5 });
+    it('should call basket onContainerUpdate on re-render if props changed', () => {
       const renderPropChildren = jest.fn().mockReturnValue(null);
       const children = <Subscriber>{renderPropChildren}</Subscriber>;
       const wrapper = mount(<Container defaultCount={5}>{children}</Container>);
-      Container.basketType.onContainerUpdate.mockReturnValueOnce({ count: 6 });
-      storeMock.mutator.mockReturnValueOnce({ count: 6 });
       wrapper.setProps({ defaultCount: 6 });
-      expect(Container.basketType.onContainerInit).toHaveBeenCalledTimes(1);
-      expect(Container.basketType.onContainerUpdate).toHaveBeenCalledWith(
-        { count: 0 },
+      expect(mockOnContainerInitInner).toHaveBeenCalledTimes(1);
+      expect(mockOnContainerUpdateInner).toHaveBeenCalledWith(
+        {
+          getState: expect.any(Function),
+          setState: expect.any(Function),
+          actions: expect.any(Object),
+        },
         { defaultCount: 6 }
       );
-      expect(storeMock.mutator).toHaveBeenCalledTimes(2);
-      expect(storeMock.setState).toHaveBeenCalledWith({ count: 6 });
     });
 
     it('should pass props to subscriber actions', () => {

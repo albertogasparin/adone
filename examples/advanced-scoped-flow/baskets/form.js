@@ -9,6 +9,10 @@ type State = {
   toUsers: number,
 };
 
+type ContainerProps = {
+  remoteUsers: number,
+};
+
 const initialState: State = {
   message: '',
   isValid: false,
@@ -40,12 +44,12 @@ const actions = {
 const {
   Subscriber: FormSubscriber,
   Container: FormContainer,
-} = createComponents<State, typeof actions>({
+} = createComponents<State, typeof actions, ContainerProps>({
   name: 'form',
   initialState,
   actions,
-  onContainerUpdate: (state, variables) => {
-    return { ...state, toUsers: variables.remoteUsers };
+  onContainerUpdate: () => ({ setState }, { remoteUsers }) => {
+    setState({ toUsers: remoteUsers });
   },
 });
 export { FormSubscriber, FormContainer };

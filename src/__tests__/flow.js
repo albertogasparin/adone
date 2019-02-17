@@ -68,7 +68,7 @@ basket = { key: ['bla'], initialState: { count: 0 }, actions };
 /**
  * createComponents types tests
  */
-Cc = createComponents<State, typeof actions>({
+Cc = createComponents<State, typeof actions, void>({
   name: 'Type',
   initialState: { count: 0 },
   actions,

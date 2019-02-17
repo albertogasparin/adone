@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Provider, readContext } from '../context';
 import BasketRegistry from '../registry';
 import shallowEqual from '../utils/shallow-equal';
-import bindActions from '../bind-actions';
+import { bindAction, bindActions } from '../bind-actions';
 
 export default class Container extends Component {
   static propTypes = {
@@ -16,41 +16,18 @@ export default class Container extends Component {
   static basketType = null;
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    // we trigger store updates during this phase to avoid double rendering:
-    // container gets fresh props, notifies subscribers which will setState
-    // but as a render will already happen, we enjoy the batched update
-    const { basketType, api, getContainerProps } = prevState;
     const { scope } = nextProps;
-    // we explicitly pass scope as it might be changed
-    const { store } = api.getBasket(basketType, scope);
-    const isInitialized = prevState.scope === scope;
-    const method = !isInitialized ? 'onContainerInit' : 'onContainerUpdate';
+    const isInitialized =
+      scope === prevState.scope && prevState.scopedBasketActions;
 
-    if (basketType[method]) {
-      const currentStoreState = store.getState();
-      const result = basketType[method](
-        currentStoreState,
-        getContainerProps(nextProps)
-      );
-      store.mutator._action = method; // used for better debugging
-      const nextStoreState = store.mutator(result);
-      // check if store is different here as cheaper than checking in every subscriber
-      if (nextStoreState && !shallowEqual(currentStoreState, nextStoreState)) {
-        store.setState(nextStoreState);
-      }
-    }
-    // after first call we mark the store as initialized
+    let nextState = null;
     if (!isInitialized) {
-      return {
-        scope,
-        scopedBasketActions: bindActions(
-          basketType.actions,
-          store,
-          getContainerProps
-        ),
-      };
+      const actions = prevState.bindContainerActions(scope);
+      nextState = { scope, scopedBasketActions: actions };
     }
-    return null;
+    // We trigger the action here so subscribers get new values ASAP
+    prevState.triggerContainerAction(nextProps);
+    return nextState;
   }
 
   constructor(props) {
@@ -66,8 +43,8 @@ export default class Container extends Component {
       },
       // stored to make them available in getDerivedStateFromProps
       // as js context there is null https://github.com/facebook/react/issues/12612
-      basketType: this.constructor.basketType,
-      getContainerProps: this.getContainerProps,
+      bindContainerActions: this.bindContainerActions,
+      triggerContainerAction: this.triggerContainerAction,
       scope: null,
       scopedBasketActions: null,
     };
@@ -83,11 +60,54 @@ export default class Container extends Component {
     this.deleteScopedBasket();
   }
 
-  getContainerProps = (props = this.props) => {
-    // eslint-disable-next-line no-unused-vars
-    const { children, scope, isGlobal, ...restProps } = props;
-    return restProps;
+  bindContainerActions = scope => {
+    const { basketType } = this.constructor;
+    const { api } = this.state;
+    // we explicitly pass scope as it might be changed
+    const { store } = api.getBasket(basketType, scope);
+
+    const actions = bindActions(
+      basketType.actions,
+      store,
+      this.getContainerProps
+    );
+    this.onContainerInit = bindAction(
+      store,
+      basketType.onContainerInit,
+      'onContainerInit',
+      this.getContainerProps,
+      actions
+    );
+    this.onContainerUpdate = bindAction(
+      store,
+      basketType.onContainerUpdate,
+      'onContainerUpdate',
+      this.getContainerProps,
+      actions
+    );
+    // make sure we also reset actionProps
+    this.actionProps = null;
+    return actions;
   };
+
+  triggerContainerAction = nextProps => {
+    // eslint-disable-next-line no-unused-vars
+    const { children, scope, isGlobal, ...restProps } = nextProps;
+    if (shallowEqual(this.actionProps, restProps)) return;
+
+    // store restProps on instance so we can diff and use fresh props
+    // in actions even before react sets them in this.props
+    this.actionProps = restProps;
+
+    if (this.onContainerInit) {
+      this.onContainerInit();
+      this.onContainerInit = null;
+    } else {
+      this.onContainerUpdate();
+    }
+  };
+
+  getContainerProps = () => this.actionProps;
 
   getRegistry() {
     const isLocal = !this.props.scope && !this.props.isGlobal;
@@ -95,7 +115,7 @@ export default class Container extends Component {
   }
 
   getScopedBasket(basket, scopeId = this.props.scope) {
-    const { basketType } = this.state;
+    const { basketType } = this.constructor;
     if (basket !== basketType) {
       return null;
     }
@@ -109,7 +129,7 @@ export default class Container extends Component {
   }
 
   deleteScopedBasket(scopeId = this.props.scope) {
-    const { basketType } = this.state;
+    const { basketType } = this.constructor;
     const { store } = this.getScopedBasket(basketType, scopeId);
     if (!store.listeners().length) {
       this.getRegistry().deleteBasket(basketType, scopeId);

@@ -6,14 +6,21 @@ type State = {
   color: string,
 };
 
+type ContainerProps = {
+  defaultColor: string,
+};
+
 const initialState: State = {
   color: '',
 };
 
 const actions = {
-  change: (value: string): BasketAction<State> => ({ setState }) => {
+  change: (value?: string): BasketAction<State> => (
+    { setState },
+    { defaultColor }
+  ) => {
     setState({
-      color: value,
+      color: value || defaultColor,
     });
   },
 };
@@ -21,14 +28,17 @@ const actions = {
 const {
   Subscriber: ThemeSubscriber,
   Container: ThemeContainer,
-} = createComponents<State, typeof actions>({
+} = createComponents<State, typeof actions, ContainerProps>({
   name: 'theme',
   initialState,
   actions,
-  onContainerInit: (state, variables) => {
-    // this gets currently called also when component remount
-    // so we have to check state status and apply default only on first mount
-    return { ...state, color: state.color || variables.defaultColor };
+  onContainerInit: () => ({ getState, actions: boundActions }) => {
+    // this gets currently called also when component remounts
+    // so it is important to check state status and apply default only on first mount
+    const { color } = getState();
+    if (!color) {
+      boundActions.change();
+    }
   },
 });
 

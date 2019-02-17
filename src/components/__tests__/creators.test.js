@@ -38,8 +38,8 @@ describe('creators', () => {
         actions: {
           updateFoo,
         },
-        onContainerInit: null,
-        onContainerUpdate: null,
+        onContainerInit: expect.any(Function),
+        onContainerUpdate: expect.any(Function),
       });
       expect(hash).toHaveBeenCalledWith('{"foo":"bar"}');
     });
@@ -54,6 +54,8 @@ describe('creators', () => {
           updateFoo,
         },
         name: 'test',
+        onContainerInit: jest.fn(),
+        onContainerUpdate: jest.fn(),
       });
 
       expect(Container.prototype).toBeInstanceOf(ContainerClass);
@@ -66,8 +68,8 @@ describe('creators', () => {
         actions: {
           updateFoo,
         },
-        onContainerInit: null,
-        onContainerUpdate: null,
+        onContainerInit: expect.any(Function),
+        onContainerUpdate: expect.any(Function),
       });
       expect(hash).toHaveBeenCalledWith('{"foo":"bar"}');
     });

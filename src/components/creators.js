@@ -2,6 +2,8 @@ import Container from './container';
 import Subscriber from './subscriber';
 import hash from '../utils/hash';
 
+const noop = () => () => {};
+
 const createSubscriber = basketType =>
   class extends Subscriber {
     static basketType = basketType;
@@ -18,8 +20,8 @@ export function createComponents({
   name = '',
   initialState,
   actions,
-  onContainerInit = null,
-  onContainerUpdate = null,
+  onContainerInit = noop,
+  onContainerUpdate = noop,
 }) {
   const src = !name
     ? Object.keys(actions).reduce((acc, k) => acc + actions[k].toString(), '')

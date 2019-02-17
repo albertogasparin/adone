@@ -8,24 +8,28 @@ const createNamedMutator = (store, actionName) =>
       }
     : store.mutator;
 
-export default function bindActions(
-  actions,
+export const bindAction = (
   store,
-  getContainerProps = () => ({})
-) {
-  return Object.keys(actions).reduce((acc, k) => {
-    // Setting mutator name so we can log action name for better debuggability
-    const namedMutator = createNamedMutator(store, k);
-    acc[k] = (...args) => {
-      return actions[k](...args)(
-        {
-          setState: namedMutator,
-          getState: store.getState,
-          actions: acc,
-        },
-        getContainerProps()
-      );
-    };
+  actionFn,
+  actionKey,
+  getContainerProps,
+  otherActions
+) => {
+  // Setting mutator name so we can log action name for better debuggability
+  const namedMutator = createNamedMutator(store, actionKey);
+  return (...args) =>
+    actionFn(...args)(
+      {
+        setState: namedMutator,
+        getState: store.getState,
+        actions: otherActions,
+      },
+      getContainerProps()
+    );
+};
+
+export const bindActions = (actions, store, getContainerProps = () => ({})) =>
+  Object.keys(actions).reduce((acc, k) => {
+    acc[k] = bindAction(store, actions[k], k, getContainerProps, actions);
     return acc;
   }, {});
-}
