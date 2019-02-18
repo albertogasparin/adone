@@ -15,14 +15,14 @@ export default class Chat extends Component<{
     return (
       <ThemeContainer scope={id} defaultColor={defaultColor}>
         <ThemeSubscriber>
-          {({ color, change }) => (
+          {({ color }, { change }) => (
             <div style={{ background: color }}>
               <h2>Chat</h2>
               <button onClick={() => change('#DFF')}>Theme 1</button>
               <button onClick={() => change('#FDF')}>Theme 2</button>
               <button onClick={() => change('#FFD')}>Theme 3</button>
               <MessagesSubscriber>
-                {({ data, add }) => (
+                {({ data }, { add }) => (
                   <div>
                     <ul>
                       {data.map((m, i) => (
@@ -31,14 +31,10 @@ export default class Chat extends Component<{
                     </ul>
                     <FormContainer remoteUsers={remoteUsers}>
                       <FormSubscriber>
-                        {({
-                          isValid,
-                          message,
-                          isSending,
-                          toUsers,
-                          input,
-                          send,
-                        }) => (
+                        {(
+                          { isValid, message, isSending, toUsers },
+                          { input, send }
+                        ) => (
                           <form
                             action="#"
                             onSubmit={ev => {

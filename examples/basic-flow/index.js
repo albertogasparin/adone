@@ -14,7 +14,7 @@ class App extends Component<{}> {
         <h1>Counter example</h1>
         <main>
           <CountSubscriber>
-            {({ count, increment }) => (
+            {({ count }, { increment }) => (
               <div>
                 <p>{count}</p>
                 <button onClick={increment}>+1</button>

@@ -200,7 +200,7 @@ describe('Container', () => {
       const renderPropChildren = jest.fn().mockReturnValue(null);
       const children = <Subscriber>{renderPropChildren}</Subscriber>;
       mount(<Container defaultCount={5}>{children}</Container>);
-      const { increase } = renderPropChildren.mock.calls[0][0];
+      const [, { increase }] = renderPropChildren.mock.calls[0];
       increase();
       expect(actionInner).toHaveBeenCalledWith(
         {
@@ -219,7 +219,7 @@ describe('Container', () => {
       const renderPropChildren = jest.fn().mockReturnValue(null);
       const children = <Subscriber>{renderPropChildren}</Subscriber>;
       const wrapper = mount(<Container defaultCount={5}>{children}</Container>);
-      const { increase } = renderPropChildren.mock.calls[0][0];
+      const [, { increase }] = renderPropChildren.mock.calls[0];
       wrapper.setProps({ defaultCount: 6 });
       increase();
       expect(actionInner).toHaveBeenCalledWith(

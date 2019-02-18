@@ -45,7 +45,7 @@ const UserList = ({ users, selected, loading, onSelect }: UserListProps) =>
 const SubscribedUserList = () => (
   <UserContainer isGlobal>
     <UserSubscriber>
-      {({ data, loading, selected, select, load }) => (
+      {({ data, loading, selected }, { select, load }) => (
         <UserList
           users={data || []}
           loading={loading}

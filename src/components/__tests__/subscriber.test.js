@@ -99,7 +99,7 @@ describe('Subscriber', () => {
         const { getShallow, children } = setup();
         getShallow();
         expect(children).toHaveBeenCalledTimes(1);
-        expect(children).toHaveBeenCalledWith({ count: 0, ...actions });
+        expect(children).toHaveBeenCalledWith({ count: 0 }, actions);
       });
 
       it('should update on mount if store value changes in meantime', () => {
@@ -108,8 +108,8 @@ describe('Subscriber', () => {
         storeMock.getState.mockReturnValue({ count: 2 });
         getMount().instance();
         expect(children).toHaveBeenCalledTimes(2);
-        expect(children).toHaveBeenCalledWith({ count: 1, ...actions });
-        expect(children).toHaveBeenLastCalledWith({ count: 2, ...actions });
+        expect(children).toHaveBeenCalledWith({ count: 1 }, actions);
+        expect(children).toHaveBeenLastCalledWith({ count: 2 }, actions);
       });
 
       it('should update when store calls update listener', () => {
@@ -119,8 +119,8 @@ describe('Subscriber', () => {
         storeMock.getState.mockReturnValue({ count: 2 });
         instance.onUpdate();
         expect(children).toHaveBeenCalledTimes(2);
-        expect(children).toHaveBeenCalledWith({ count: 1, ...actions });
-        expect(children).toHaveBeenLastCalledWith({ count: 2, ...actions });
+        expect(children).toHaveBeenCalledWith({ count: 1 }, actions);
+        expect(children).toHaveBeenLastCalledWith({ count: 2 }, actions);
       });
 
       it('should avoid re-render children when just rendered from parent update', () => {
@@ -141,7 +141,7 @@ describe('Subscriber', () => {
 
         expect(storeMock.getState).toHaveBeenCalledTimes(4);
         expect(children).toHaveBeenCalledTimes(2);
-        expect(children).toHaveBeenCalledWith({ count: 1, ...actions });
+        expect(children).toHaveBeenCalledWith({ count: 1 }, actions);
       });
 
       it('should remove listener from store on unmount', () => {
@@ -165,7 +165,7 @@ describe('Subscriber', () => {
           basketMock.initialState,
           { prop: 1 }
         );
-        expect(children).toHaveBeenCalledWith({ foo: 1, ...actions });
+        expect(children).toHaveBeenCalledWith({ foo: 1 }, actions);
         Subscriber.selector = undefined;
       });
 
@@ -176,7 +176,7 @@ describe('Subscriber', () => {
         Subscriber.selector.mockReturnValue({ foo: 2 });
         storeMock.getState.mockReturnValue({ count: 1 });
         instance.onUpdate();
-        expect(children).toHaveBeenLastCalledWith({ foo: 2, ...actions });
+        expect(children).toHaveBeenLastCalledWith({ foo: 2 }, actions);
         Subscriber.selector = undefined;
       });
 
@@ -199,7 +199,7 @@ describe('Subscriber', () => {
         storeMock.getState.mockReturnValue({ count: 1 });
         instance.onUpdate();
         expect(children).toHaveBeenCalledTimes(1);
-        expect(children).toHaveBeenCalledWith({ ...actions });
+        expect(children).toHaveBeenCalledWith({}, actions);
         Subscriber.selector = undefined;
       });
     });

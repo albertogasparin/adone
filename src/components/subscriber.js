@@ -116,9 +116,6 @@ export default class Subscriber extends Component {
   };
 
   render() {
-    return this.props.children({
-      ...this.state.basketState,
-      ...this.basket.actions,
-    });
+    return this.props.children(this.state.basketState, this.basket.actions);
   }
 }

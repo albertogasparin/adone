@@ -13,7 +13,7 @@ type SetState<ST> = ($Shape<ST>) => void;
 type GetState<ST> = () => $ReadOnly<ST>;
 type BasketStoreUnsubscribe = () => void;
 
-type RenderPropComponent<S, A> = ($Exact<$ReadOnly<S>> & $Exact<A>) => Node;
+type RenderPropComponent<S, A> = ($Exact<$ReadOnly<S>>, $Exact<A>) => Node;
 
 export type Basket<ST, AC> = {|
   key: string[],

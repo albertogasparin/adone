@@ -81,7 +81,7 @@ Test = (
 
 Test = (
   // $ExpectError Basket actions should be correcly typed
-  <Cc.Subscriber>{({ increment }) => increment()}</Cc.Subscriber>
+  <Cc.Subscriber>{(__, { increment }) => increment()}</Cc.Subscriber>
 );
 
 Test = (
@@ -91,7 +91,7 @@ Test = (
 
 // Correct
 Test = <Cc.Subscriber>{({ count }) => count + 0}</Cc.Subscriber>;
-Test = <Cc.Subscriber>{({ increment }) => increment(1)}</Cc.Subscriber>;
+Test = <Cc.Subscriber>{(__, { increment }) => increment(1)}</Cc.Subscriber>;
 
 /**
  * createSelectorComponent types tests
@@ -108,7 +108,7 @@ Test = (
 
 // Correct
 Test = <TypeSelector>{({ baz }) => baz}</TypeSelector>;
-Test = <TypeSelector>{({ increment }) => increment(1)}</TypeSelector>;
+Test = <TypeSelector>{(__, { increment }) => increment(1)}</TypeSelector>;
 
 TypeSelector = createSelectorComponent<typeof actions>(Cc.Subscriber, null);
 
@@ -118,7 +118,7 @@ Test = (
 );
 
 // Correct
-Test = <TypeSelector>{({ increment }) => increment(1)}</TypeSelector>;
+Test = <TypeSelector>{([, { increment }]) => increment(1)}</TypeSelector>;
 
 /**
  * Container types tests

@@ -38,7 +38,7 @@ const SubscribedTodoList = () => (
     {({ sel }) => (
       <TodoContainer selectedUser={sel}>
         <TodoSubscriber>
-          {({ data, loading, load }) => (
+          {({ data, loading }, { load }) => (
             <TodoList
               todos={data}
               loading={loading}
