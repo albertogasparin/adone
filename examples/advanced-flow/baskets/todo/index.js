@@ -1,6 +1,6 @@
 // @flow
 
-import { createComponents } from 'react-adone';
+import { createStore, createContainer, createSubscriber } from 'react-adone';
 import type { State } from './types';
 
 import * as actions from './actions';
@@ -13,13 +13,15 @@ const initialState: State = {
   loading: false,
 };
 
-export const {
-  Container: TodoContainer,
-  Subscriber: TodoSubscriber,
-} = createComponents<State, Actions, ContainerProps>({
+const Store = createStore<State, Actions>({
   initialState,
   actions,
-  onContainerUpdate: () => ({ dispatch }, { selectedUser }) => {
+});
+
+export const TodoContainer = createContainer<*, *, ContainerProps>(Store, {
+  onUpdate: () => ({ dispatch }, { selectedUser }) => {
     if (selectedUser) dispatch(actions.load(selectedUser));
   },
 });
+
+export const TodoSubscriber = createSubscriber<*, *>(Store);

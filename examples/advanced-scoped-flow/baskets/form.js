@@ -1,6 +1,11 @@
 // @flow
 
-import { createComponents, type BasketAction } from 'react-adone';
+import {
+  createStore,
+  createContainer,
+  createSubscriber,
+  type Action,
+} from 'react-adone';
 
 type State = {
   message: string,
@@ -9,9 +14,11 @@ type State = {
   toUsers: number,
 };
 
-type ContainerProps = {
+type Actions = typeof actions;
+
+type ContainerProps = {|
   remoteUsers: number,
-};
+|};
 
 const initialState: State = {
   message: '',
@@ -21,14 +28,14 @@ const initialState: State = {
 };
 
 const actions = {
-  input: (value: string): BasketAction<State> => ({ setState }) => {
+  input: (value: string): Action<State> => ({ setState }) => {
     setState({
       message: value,
       isValid: value.length > 0,
     });
   },
 
-  send: (message: string): BasketAction<State> => async ({ setState }) => {
+  send: (message: string): Action<State> => async ({ setState }) => {
     setState({
       isSending: true,
     });
@@ -41,15 +48,16 @@ const actions = {
   },
 };
 
-const {
-  Subscriber: FormSubscriber,
-  Container: FormContainer,
-} = createComponents<State, typeof actions, ContainerProps>({
+const Store = createStore<State, Actions>({
   name: 'form',
   initialState,
   actions,
-  onContainerUpdate: () => ({ setState }, { remoteUsers }) => {
+});
+
+export const FormContainer = createContainer<*, *, ContainerProps>(Store, {
+  onUpdate: () => ({ setState }, { remoteUsers }) => {
     setState({ toUsers: remoteUsers });
   },
 });
-export { FormSubscriber, FormContainer };
+
+export const FormSubscriber = createSubscriber<*, *>(Store);

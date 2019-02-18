@@ -17,7 +17,6 @@ type TodoListProps = {
   selectedUser: ?string,
   todos: TodoModel[] | null,
   loading: boolean,
-  onLoad: (uid: string) => any,
 };
 
 const TodoList = ({ todos, loading, selectedUser }: TodoListProps) =>
@@ -38,13 +37,8 @@ const SubscribedTodoList = () => (
     {({ sel }) => (
       <TodoContainer selectedUser={sel}>
         <TodoSubscriber>
-          {({ data, loading }, { load }) => (
-            <TodoList
-              todos={data}
-              loading={loading}
-              onLoad={load}
-              selectedUser={sel}
-            />
+          {({ data, loading }) => (
+            <TodoList todos={data} loading={loading} selectedUser={sel} />
           )}
         </TodoSubscriber>
       </TodoContainer>

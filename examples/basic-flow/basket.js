@@ -1,30 +1,27 @@
 // @flow
 
-import { type BasketAction, createComponents } from 'react-adone';
+import { type Action, createStore, createSubscriber } from 'react-adone';
 
 type State = {
   count: number,
 };
+
+type Actions = typeof actions;
 
 const initialState: State = {
   count: 0,
 };
 
 const actions = {
-  increment: (): BasketAction<State> => ({ setState, getState }) => {
+  increment: (): Action<State> => ({ setState, getState }) => {
     setState({
       count: getState().count + 1,
     });
   },
 };
 
-const { Subscriber: CountSubscriber } = createComponents<
-  State,
-  typeof actions,
-  {||}
->({
-  initialState,
-  actions,
-});
+const Store = createStore<State, Actions>({ initialState, actions });
 
-export { CountSubscriber };
+export const CountSubscriber = createSubscriber<State, typeof actions, {||}>(
+  Store
+);

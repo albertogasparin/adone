@@ -1,8 +1,9 @@
 // @flow
 
 export {
-  createComponents,
-  createSelectorComponent,
+  createStore,
+  createContainer,
+  createSubscriber,
 } from './components/creators';
 export { default as AdoneProvider } from './components/provider';
 export { default as defaults } from './defaults';

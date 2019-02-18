@@ -1,6 +1,6 @@
 // @flow
 
-import { type BasketAction } from 'react-adone';
+import { type Action } from 'react-adone';
 import type { TodoModel, State } from './types';
 
 // Dummy data
@@ -9,9 +9,7 @@ const TODOS: { [id: string]: TodoModel[] } = {
   '2': [{ title: 'Do the dishes' }],
 };
 
-export const load = (uid: string): BasketAction<State> => async ({
-  setState,
-}) => {
+export const load = (uid: string): Action<State> => async ({ setState }) => {
   setState({
     loading: true,
     data: null, // reset

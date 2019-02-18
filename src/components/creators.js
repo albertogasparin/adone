@@ -1,53 +1,39 @@
-import Container from './container';
-import Subscriber from './subscriber';
+import ContainerComponent from './container';
+import SubscriberComponent from './subscriber';
 import hash from '../utils/hash';
 
 const noop = () => () => {};
+const defaultSelector = state => state;
 
-const createSubscriber = basketType =>
-  class extends Subscriber {
-    static basketType = basketType;
-    static displayName = `Subscriber(${basketType.key[0]})`;
-  };
-
-const createContainer = basketType =>
-  class extends Container {
-    static basketType = basketType;
-    static displayName = `Container(${basketType.key[0]})`;
-  };
-
-export function createComponents({
-  name = '',
-  initialState,
-  actions,
-  onContainerInit = noop,
-  onContainerUpdate = noop,
-}) {
+export function createStore({ name = '', initialState, actions }) {
   const src = !name
     ? Object.keys(actions).reduce((acc, k) => acc + actions[k].toString(), '')
     : '';
-  const rawBasket = {
+  return {
     key: [name, hash(src + JSON.stringify(initialState))].filter(Boolean),
     initialState,
     actions,
-    onContainerInit,
-    onContainerUpdate,
-  };
-  return {
-    Container: createContainer(rawBasket),
-    Subscriber: createSubscriber(rawBasket),
   };
 }
 
-export function createSelectorComponent(
-  SubscriberComponent,
-  selectorFn,
-  displayName
+export function createSubscriber(
+  Store,
+  { selector = defaultSelector, displayName = '' } = {}
 ) {
   return class extends SubscriberComponent {
-    static selector = selectorFn;
-    static displayName =
-      displayName ||
-      `SubscriberSelector(${SubscriberComponent.basketType.key[0]})`;
+    static basketType = Store;
+    static displayName = displayName || `Subscriber(${Store.key[0]})`;
+    static selector = selector;
+  };
+}
+
+export function createContainer(
+  Store,
+  { onInit = noop, onUpdate = noop, displayName = '' } = {}
+) {
+  return class extends ContainerComponent {
+    static basketType = Store;
+    static displayName = displayName || `Container(${Store.key[0]})`;
+    static hooks = { onInit, onUpdate };
   };
 }

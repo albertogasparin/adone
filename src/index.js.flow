@@ -11,36 +11,36 @@ import type { Node } from 'react';
 
 type SetState<ST> = ($Shape<ST>) => void;
 type GetState<ST> = () => $ReadOnly<ST>;
-type BasketStoreUnsubscribe = () => void;
+type StoreUnsubscribe = () => void;
 
 type RenderPropComponent<S, A> = ($Exact<$ReadOnly<S>>, $Exact<A>) => Node;
 
-export type Basket<ST, AC> = {|
+export type Store<ST, AC> = {|
   key: string[],
   initialState: ST,
   actions: AC,
 |};
 
-export type BasketStore<ST> = {|
+export type StoreState<ST> = {|
   getState: GetState<ST>,
   setState: ST => void,
   key: string[],
-  subscribe: (listener: () => void) => BasketStoreUnsubscribe,
+  subscribe: (listener: () => void) => StoreUnsubscribe,
   mutator: SetState<ST>,
 |};
 
-export type BasketAction<ST, PR = *, AC = *> = (
+export type Action<ST, PR = *, AC = *> = (
   {|
     setState: SetState<ST>,
     getState: GetState<ST>,
     actions: AC,
-    dispatch: (actionThunk: BasketAction<ST, PR, AC>) => *,
+    dispatch: (actionThunk: Action<ST, PR, AC>) => *,
   |},
   containerProps: PR
 ) => *;
 
-export type BasketInstance<ST, AC> = {
-  store: BasketStore<ST>,
+export type StoreInstance<ST, AC> = {
+  store: StoreState<ST>,
   actions: AC,
 };
 
@@ -48,13 +48,10 @@ declare export class Registry {
   configure: ({
     initialStates?: { [key: string]: Object },
   }) => void;
-  baskets: Map<string, BasketInstance<any, any>>;
-  initBasket: <ST, AC>(key: string, Basket<ST, AC>) => BasketInstance<ST, AC>;
-  getBasket: <ST, AC>(
-    Basket<ST, AC>,
-    scopeId: string
-  ) => BasketInstance<ST, AC>;
-  deleteBasket: <ST, AC>(Basket<ST, AC>, scopeId: string) => void;
+  baskets: Map<string, StoreInstance<any, any>>;
+  initBasket: <ST, AC>(key: string, Store<ST, AC>) => StoreInstance<ST, AC>;
+  getBasket: <ST, AC>(Store<ST, AC>, scopeId: string) => StoreInstance<ST, AC>;
+  deleteBasket: <ST, AC>(Store<ST, AC>, scopeId: string) => void;
 }
 
 declare export var defaultRegistry: Registry;
@@ -73,7 +70,7 @@ declare export class AdoneProvider extends React$Component<
 
 type MiddlewareResult = any;
 export type Middleware = (
-  store: BasketStore<any>
+  store: StoreState<any>
 ) => (next: (fn: any) => MiddlewareResult) => (fn: () => *) => MiddlewareResult;
 
 declare export var defaults: {
@@ -82,27 +79,61 @@ declare export var defaults: {
   mutator: <ST>(prevState: ST, partialState: $Shape<ST>) => ST,
 };
 
-declare export function createComponents<ST, AC, PR>({
+type ContainerComponent<PR> = React$ComponentType<{|
+  scope?: string,
+  isGlobal?: boolean,
+  children: Node,
+  ...PR,
+|}>;
+
+type SubscriberComponent<ST, AC, PR> = React$ComponentType<{|
+  children: RenderPropComponent<ST, AC>,
+  ...PR,
+|}>;
+
+declare export function createStore<ST, AC>({
   initialState: ST,
   actions: AC,
   name?: string,
-  onContainerInit?: () => BasketAction<ST, PR, AC>,
-  onContainerUpdate?: () => BasketAction<ST, PR, AC>,
-}): {
-  Container: React$ComponentType<{ scope?: string, isGlobal?: boolean, ...PR }>,
-  Subscriber: React$ComponentType<{
-    children: RenderPropComponent<ST, AC>,
-  }>,
-};
+}): Store<ST, AC>;
 
-declare export function createSelectorComponent<SE, AC>(
-  Subscriber: React$ComponentType<any>,
-  selector: (state: any) => SE,
-  displayName?: string
-): React$ComponentType<{ children: RenderPropComponent<SE, AC> }>;
+declare export function createContainer<ST, AC, PR>(
+  store: Store<ST, AC>,
+  options?: {|
+    onInit?: () => Action<ST, PR, AC>,
+    onUpdate?: () => Action<ST, PR, AC>,
+    displayName?: string,
+  |}
+): ContainerComponent<PR>;
 
-declare export function createSelectorComponent<AC>(
-  Subscriber: React$ComponentType<any>,
-  selector: null,
-  displayName?: string
-): React$ComponentType<{ children: RenderPropComponent<{}, AC> }>;
+declare export function createSubscriber<ST, AC>(
+  store: Store<ST, AC>,
+  options?: {|
+    displayName?: string,
+  |}
+): SubscriberComponent<ST, AC, {||}>;
+
+// does not work as Flow complains cannot select between null and fn()
+// declare export function createSubscriber<ST, AC>(
+//   store: Store<ST, AC>,
+//   options: {|
+//     selector: null,
+//     displayName?: string,
+//   |}
+// ): SubscriberComponent<{||}, AC, {||}>;
+
+declare export function createSubscriber<ST, AC, SE>(
+  store: Store<ST, AC>,
+  options: {|
+    selector: null | ((state: ST) => SE),
+    displayName?: string,
+  |}
+): SubscriberComponent<SE, AC, {||}>;
+
+declare export function createSubscriber<ST, AC, SE, PR>(
+  store: Store<ST, AC>,
+  options: {|
+    selector: (state: ST, props: PR) => SE,
+    displayName?: string,
+  |}
+): SubscriberComponent<SE, AC, PR>;

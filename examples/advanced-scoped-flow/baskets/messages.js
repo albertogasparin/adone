@@ -1,11 +1,13 @@
 // @flow
 
-import { createComponents, type BasketAction } from 'react-adone';
+import { createStore, createSubscriber, type Action } from 'react-adone';
 
 type State = {
   data: string[],
   loading: boolean,
 };
+
+type Actions = typeof actions;
 
 const initialState: State = {
   data: [],
@@ -13,21 +15,17 @@ const initialState: State = {
 };
 
 const actions = {
-  add: (message: string): BasketAction<State> => ({ setState, getState }) => {
+  add: (message: string): Action<State> => ({ setState, getState }) => {
     setState({
       data: [...getState().data, message],
     });
   },
 };
 
-const { Subscriber: MessagesSubscriber } = createComponents<
-  State,
-  typeof actions,
-  void
->({
+const Store = createStore<State, Actions>({
   name: 'messages',
   initialState,
   actions,
 });
 
-export { MessagesSubscriber };
+export const MessagesSubscriber = createSubscriber<*, *>(Store);

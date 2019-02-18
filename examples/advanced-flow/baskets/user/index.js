@@ -1,6 +1,6 @@
 // @flow
 
-import { createComponents, createSelectorComponent } from 'react-adone';
+import { createStore, createContainer, createSubscriber } from 'react-adone';
 import type { State } from './types';
 
 import * as actions from './actions';
@@ -8,6 +8,7 @@ import * as selectors from './selectors';
 
 type Actions = typeof actions;
 type ContainerProps = {||};
+type UserSelectedState = $Call<typeof selectors.getSelected, State>;
 
 const initialState: State = {
   selected: null,
@@ -15,16 +16,20 @@ const initialState: State = {
   loading: false,
 };
 
-export const {
-  Container: UserContainer,
-  Subscriber: UserSubscriber,
-} = createComponents<State, Actions, ContainerProps>({
+const Store = createStore<State, Actions>({
   initialState,
   actions,
-  onContainerInit: actions.load,
 });
 
-export const UserSelectedSubscriber = createSelectorComponent<
-  $Call<typeof selectors.getSelected, State>,
-  Actions
->(UserSubscriber, selectors.getSelected);
+export const UserContainer = createContainer<*, *, ContainerProps>(Store, {
+  onInit: actions.load,
+});
+
+export const UserSubscriber = createSubscriber<*, *>(Store);
+
+export const UserSelectedSubscriber = createSubscriber<*, *, UserSelectedState>(
+  Store,
+  {
+    selector: selectors.getSelected,
+  }
+);

@@ -14,6 +14,7 @@ export default class Container extends Component {
   };
 
   static basketType = null;
+  static hooks = null;
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const { scope } = nextProps;
@@ -61,7 +62,7 @@ export default class Container extends Component {
   }
 
   bindContainerActions = scope => {
-    const { basketType } = this.constructor;
+    const { basketType, hooks } = this.constructor;
     const { api } = this.state;
     // we explicitly pass scope as it might be changed
     const { store } = api.getBasket(basketType, scope);
@@ -71,17 +72,17 @@ export default class Container extends Component {
       store,
       this.getContainerProps
     );
-    this.onContainerInit = bindAction(
+    this.onInit = bindAction(
       store,
-      basketType.onContainerInit,
-      'onContainerInit',
+      hooks.onInit,
+      'onInit',
       this.getContainerProps,
       actions
     );
-    this.onContainerUpdate = bindAction(
+    this.onUpdate = bindAction(
       store,
-      basketType.onContainerUpdate,
-      'onContainerUpdate',
+      hooks.onUpdate,
+      'onUpdate',
       this.getContainerProps,
       actions
     );
@@ -99,11 +100,11 @@ export default class Container extends Component {
     // in actions even before react sets them in this.props
     this.actionProps = restProps;
 
-    if (this.onContainerInit) {
-      this.onContainerInit();
-      this.onContainerInit = null;
+    if (this.onInit) {
+      this.onInit();
+      this.onInit = null;
     } else {
-      this.onContainerUpdate();
+      this.onUpdate();
     }
   };
 

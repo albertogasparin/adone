@@ -3,26 +3,27 @@
 import React from 'react';
 import {
   AdoneProvider,
-  createComponents,
-  createSelectorComponent,
-  type BasketAction,
-  type Basket,
+  createStore,
+  createContainer,
+  createSubscriber,
+  type Action,
 } from '..';
 
 /**
  * Basket types tests
  */
 type State = {| count: number |};
-type ExtraArg = {| api: () => void |};
+type Actions = typeof actions;
 
 let Test;
-let Cc;
+let TypeStore;
+let TypeContainer;
+let TypeSubscriber;
 let TypeSelector;
-let basket: Basket<State, typeof actions>;
 
 const actions = {
   // setState tests
-  increment: (n: number): BasketAction<State> => ({ setState }) => {
+  increment: (n: number): Action<State> => ({ setState }) => {
     // $ExpectError setState should be of type State
     setState('');
 
@@ -38,7 +39,7 @@ const actions = {
   },
 
   // GetState tests
-  decrement: (): BasketAction<State> => ({ setState, getState }) => {
+  decrement: (): Action<State> => ({ setState, getState }) => {
     const state = getState();
     // $ExpectError State should be of type State
     const bla = state.bla;
@@ -50,67 +51,72 @@ const actions = {
   },
 };
 
-// $ExpectError Basket should have key of type string
-basket = { key: 1, initialState: { count: 0 }, actions };
+// $ExpectError Store should be created with a valid argument
+TypeStore = createStore<State, Actions>({ count: 0 });
 
-// $ExpectError Basket should have initialState of type state
-basket = { key: 'bla', initialState: { bla: 0 }, actions };
+// $ExpectError Store should have initialState of type state
+TypeStore = createStore<State, Actions>({ initialState: { bla: 0 }, actions });
 
-// $ExpectError Basket should have initialState of type state
-basket = { key: 'bla', initialState: { count: 0 } };
-
-// $ExpectError Basket should have actions
-basket = { key: 'bla', initialState: { count: 0 } };
+// $ExpectError Store should have actions
+TypeStore = createStore<State, Actions>({ initialState: { count: 0 } });
 
 // Correct
-basket = { key: ['bla'], initialState: { count: 0 }, actions };
+TypeStore = createStore<State, Actions>({
+  initialState: { count: 0 },
+  actions,
+  name: 'Type',
+});
 
 /**
  * createComponents types tests
  */
-Cc = createComponents<State, typeof actions, void>({
-  name: 'Type',
-  initialState: { count: 0 },
-  actions,
-});
+TypeContainer = createContainer<*, *, {| url?: string |}>(TypeStore);
+
+TypeSubscriber = createSubscriber<*, *>(TypeStore);
 
 Test = (
   // $ExpectError Child arg shape should be state + actions
-  <Cc.Subscriber>{({ foo }) => foo}</Cc.Subscriber>
+  <TypeSubscriber>{({ foo }) => foo}</TypeSubscriber>
 );
 
 Test = (
   // $ExpectError Basket actions should be correcly typed
-  <Cc.Subscriber>{(__, { increment }) => increment()}</Cc.Subscriber>
+  <TypeSubscriber>{(__, { increment }) => increment()}</TypeSubscriber>
 );
 
 Test = (
   // $ExpectError Basket state should be read only
-  <Cc.Subscriber>{state => (state.count = 1)}</Cc.Subscriber>
+  <TypeSubscriber>{state => (state.count = 1)}</TypeSubscriber>
 );
 
 // Correct
-Test = <Cc.Subscriber>{({ count }) => count + 0}</Cc.Subscriber>;
-Test = <Cc.Subscriber>{(__, { increment }) => increment(1)}</Cc.Subscriber>;
+Test = <TypeSubscriber>{({ count }) => count + 0}</TypeSubscriber>;
+Test = <TypeSubscriber>{(__, { increment }) => increment(1)}</TypeSubscriber>;
 
 /**
- * createSelectorComponent types tests
+ * createSubscriber with selector types tests
  */
-TypeSelector = createSelectorComponent<{ baz: number }, typeof actions>(
-  Cc.Subscriber,
-  () => ({ baz: 1 })
-);
+TypeSelector = createSubscriber<*, *, _>(TypeStore, {
+  selector: state => ({ baz: 1 }),
+});
 
 Test = (
   // $ExpectError Child arg shape should be pick + actions
   <TypeSelector>{({ count }) => count}</TypeSelector>
 );
 
+Test = (
+  // $ExpectError Should not accept props
+  <TypeSelector min={3}>{({ baz }) => baz}</TypeSelector>
+);
+
 // Correct
 Test = <TypeSelector>{({ baz }) => baz}</TypeSelector>;
 Test = <TypeSelector>{(__, { increment }) => increment(1)}</TypeSelector>;
 
-TypeSelector = createSelectorComponent<typeof actions>(Cc.Subscriber, null);
+TypeSelector = createSubscriber<*, *, {||}, {||}>(TypeStore, {
+  selector: null,
+});
 
 Test = (
   // $ExpectError Child arg shape should be just actions
@@ -120,17 +126,51 @@ Test = (
 // Correct
 Test = <TypeSelector>{([, { increment }]) => increment(1)}</TypeSelector>;
 
+type SelectorProps = {| min: number |};
+
+TypeSelector = createSubscriber<*, *, _, SelectorProps>(TypeStore, {
+  selector: (state, props: SelectorProps) => ({ baz: 1, min: props.min }),
+});
+
+Test = (
+  // $ExpectError Should require props
+  <TypeSelector>{({ baz }) => baz}</TypeSelector>
+);
+
+Test = (
+  // $ExpectError Should require correct prop types
+  <TypeSelector min="2">{({ baz }) => baz}</TypeSelector>
+);
+
+Test = (
+  // $ExpectError Should have correct selector types
+  <TypeSelector min={2}>{({ min }) => min.split('')}</TypeSelector>
+);
+
+// Correct
+Test = <TypeSelector min={2}>{({ baz, min }) => baz + min}</TypeSelector>;
+
 /**
  * Container types tests
  */
+Test = (
+  // $ExpectError Container is not a render-prop
+  <TypeContainer>{({ count }) => count}</TypeContainer>
+);
+
+Test = (
+  // $ExpectError Only allows typed extra props
+  <TypeContainer foo="1">bla</TypeContainer>
+);
 
 // Correct
-Test = <Cc.Container id="a">bla</Cc.Container>;
-Test = <Cc.Container>bla</Cc.Container>;
+Test = <TypeContainer>bla</TypeContainer>;
+Test = <TypeContainer scope="a">bla</TypeContainer>;
+Test = <TypeContainer isGlobal>bla</TypeContainer>;
 Test = (
-  <Cc.Container id="a" url="">
+  <TypeContainer scope="a" url="">
     bla
-  </Cc.Container>
+  </TypeContainer>
 );
 
 /**

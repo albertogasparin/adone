@@ -57,6 +57,7 @@ class App extends Component<
             key={String(remount + 1)}
             id={String(reset + 1)}
             remoteUsers={remoteUsers}
+            defaultColor="#DED"
           />
         </main>
       </div>

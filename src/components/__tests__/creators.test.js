@@ -2,7 +2,7 @@
 
 import ContainerClass from '../container';
 import SubscriberClass from '../subscriber';
-import { createComponents, createSelectorComponent } from '../creators';
+import { createStore, createContainer, createSubscriber } from '../creators';
 import hash from '../../utils/hash';
 
 jest.mock('../../utils/hash', () => ({
@@ -15,10 +15,10 @@ describe('creators', () => {
     hash.mockReturnValue('mockedHash');
   });
 
-  describe('createComponents', () => {
+  describe('createSubscriber', () => {
     it('should return a Subscriber component', () => {
       const updateFoo = () => {};
-      const { Subscriber } = createComponents({
+      const Store = createStore({
         initialState: {
           foo: 'bar',
         },
@@ -27,6 +27,7 @@ describe('creators', () => {
         },
         name: 'test',
       });
+      const Subscriber = createSubscriber(Store);
 
       expect(Subscriber.prototype).toBeInstanceOf(SubscriberClass);
       expect(Subscriber.displayName).toEqual('Subscriber(test)');
@@ -38,15 +39,14 @@ describe('creators', () => {
         actions: {
           updateFoo,
         },
-        onContainerInit: expect.any(Function),
-        onContainerUpdate: expect.any(Function),
       });
       expect(hash).toHaveBeenCalledWith('{"foo":"bar"}');
     });
-
+  });
+  describe('createContainer', () => {
     it('should return a Container component', () => {
       const updateFoo = () => {};
-      const { Container } = createComponents({
+      const Store = createStore({
         initialState: {
           foo: 'bar',
         },
@@ -54,8 +54,10 @@ describe('creators', () => {
           updateFoo,
         },
         name: 'test',
-        onContainerInit: jest.fn(),
-        onContainerUpdate: jest.fn(),
+      });
+      const Container = createContainer(Store, {
+        onInit: jest.fn(),
+        onUpdate: jest.fn(),
       });
 
       expect(Container.prototype).toBeInstanceOf(ContainerClass);
@@ -68,28 +70,31 @@ describe('creators', () => {
         actions: {
           updateFoo,
         },
-        onContainerInit: expect.any(Function),
-        onContainerUpdate: expect.any(Function),
+      });
+      expect(Container.hooks).toEqual({
+        onInit: expect.any(Function),
+        onUpdate: expect.any(Function),
       });
       expect(hash).toHaveBeenCalledWith('{"foo":"bar"}');
     });
   });
-  describe('createSelectorComponent', () => {
+
+  describe('createSubscriber', () => {
     it('should return a component with selector', () => {
       const selectorMock = jest.fn();
-      const { Subscriber } = createComponents({
-        initialState: {},
+      const Store = createStore({
+        initialState: {
+          foo: 'bar',
+        },
         actions: {},
         name: 'test',
       });
-      const SubscriberSelector = createSelectorComponent(
-        Subscriber,
-        selectorMock
-      );
-      expect(SubscriberSelector.basketType).toEqual(Subscriber.basketType);
-      expect(SubscriberSelector.displayName).toEqual(
-        'SubscriberSelector(test)'
-      );
+      const SubscriberSelector = createSubscriber(Store, {
+        selector: selectorMock,
+        displayName: 'SubscriberSelector',
+      });
+      expect(SubscriberSelector.basketType).toEqual(Store);
+      expect(SubscriberSelector.displayName).toEqual('SubscriberSelector');
       expect(SubscriberSelector.selector).toEqual(selectorMock);
     });
   });

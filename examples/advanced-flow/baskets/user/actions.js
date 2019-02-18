@@ -1,5 +1,5 @@
 // @flow
-import { type BasketAction } from 'react-adone';
+import { type Action } from 'react-adone';
 import type { UserModel, State } from './types';
 
 // Dummy data
@@ -8,10 +8,7 @@ const USERS: UserModel[] = [
   { id: '2', name: 'Paul' },
 ];
 
-export const load = (): BasketAction<State> => async ({
-  setState,
-  getState,
-}) => {
+export const load = (): Action<State> => async ({ setState, getState }) => {
   if (getState().loading) return;
   setState({
     loading: true,
@@ -24,7 +21,7 @@ export const load = (): BasketAction<State> => async ({
   });
 };
 
-export const select = (uid: string): BasketAction<State> => ({ setState }) => {
+export const select = (uid: string): Action<State> => ({ setState }) => {
   setState({
     selected: uid,
   });

@@ -8,7 +8,7 @@ import { ThemeContainer, ThemeSubscriber } from './baskets/theme';
 export default class Chat extends Component<{
   id: string,
   remoteUsers: number,
-  defaultColor?: string,
+  defaultColor: string,
 }> {
   render() {
     let { id, defaultColor, remoteUsers } = this.props;
