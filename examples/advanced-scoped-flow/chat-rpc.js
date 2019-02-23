@@ -1,11 +1,11 @@
 // @flow
 import React, { Component } from 'react';
 
-import { FormSubscriber, FormContainer } from './baskets/form';
-import { MessagesSubscriber } from './baskets/messages';
-import { ThemeContainer, ThemeSubscriber } from './baskets/theme';
+import { FormSubscriber, FormContainer } from './components/form';
+import { MessagesSubscriber } from './components/messages';
+import { ThemeContainer, ThemeSubscriber } from './components/theme';
 
-export default class Chat extends Component<{
+export class ChatRpc extends Component<{
   id: string,
   remoteUsers: number,
   defaultColor: string,
@@ -17,7 +17,7 @@ export default class Chat extends Component<{
         <ThemeSubscriber>
           {({ color }, { change }) => (
             <div style={{ background: color }}>
-              <h2>Chat</h2>
+              <h3>With Render-props</h3>
               <button onClick={() => change('#DFF')}>Theme 1</button>
               <button onClick={() => change('#FDF')}>Theme 2</button>
               <button onClick={() => change('#FFD')}>Theme 3</button>

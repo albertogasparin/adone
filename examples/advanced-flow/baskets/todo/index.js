@@ -1,6 +1,11 @@
 // @flow
 
-import { createStore, createContainer, createSubscriber } from 'react-adone';
+import {
+  createStore,
+  createContainer,
+  createSubscriber,
+  createHook,
+} from 'react-adone';
 import type { State } from './types';
 
 import * as actions from './actions';
@@ -25,3 +30,5 @@ export const TodoContainer = createContainer<*, *, ContainerProps>(Store, {
 });
 
 export const TodoSubscriber = createSubscriber<*, *>(Store);
+
+export const useTodo = createHook<State, Actions>(Store);

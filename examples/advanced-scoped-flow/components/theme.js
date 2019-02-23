@@ -4,6 +4,7 @@ import {
   createStore,
   createContainer,
   createSubscriber,
+  createHook,
   type Action,
 } from 'react-adone';
 
@@ -39,14 +40,16 @@ const Store = createStore<State, Actions>({
 });
 
 export const ThemeContainer = createContainer<*, *, ContainerProps>(Store, {
-  onInit: () => ({ getState, actions: boundActions }) => {
+  onInit: () => ({ getState, dispatch }) => {
     // this gets currently called also when component remounts
     // so it is important to check state status and apply default only on first mount
     const { color } = getState();
     if (!color) {
-      boundActions.change();
+      dispatch(actions.change());
     }
   },
 });
 
 export const ThemeSubscriber = createSubscriber<*, *>(Store);
+
+export const useTheme = createHook<State, Actions>(Store);

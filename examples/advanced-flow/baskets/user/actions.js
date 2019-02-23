@@ -10,6 +10,7 @@ const USERS: UserModel[] = [
 
 export const load = (): Action<State> => async ({ setState, getState }) => {
   if (getState().loading) return;
+
   setState({
     loading: true,
   });

@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 
-import { UserContainer, UserSubscriber } from '../baskets/user';
+import { UserContainer, UserSubscriber, useUser } from '../baskets/user';
 import { type UserModel } from '../baskets/user/types';
 
 type UserItemProps = {
@@ -42,20 +42,35 @@ const UserList = ({ users, selected, loading, onSelect }: UserListProps) =>
     </ul>
   );
 
-const SubscribedUserList = () => (
+export const UserListRpc = () => (
   <UserContainer isGlobal>
     <UserSubscriber>
-      {({ data, loading, selected }, { select, load }) => (
+      {({ data, loading, selected }, { select }) => (
         <UserList
           users={data || []}
           loading={loading}
           selected={selected}
           onSelect={select}
-          onLoad={load}
         />
       )}
     </UserSubscriber>
   </UserContainer>
 );
 
-export default SubscribedUserList;
+const UserListComponent = () => {
+  const [{ data, loading, selected }, { select }] = useUser();
+  return (
+    <UserList
+      users={data || []}
+      loading={loading}
+      selected={selected}
+      onSelect={select}
+    />
+  );
+};
+
+export const UserListHook = () => (
+  <UserContainer isGlobal>
+    <UserListComponent />
+  </UserContainer>
+);

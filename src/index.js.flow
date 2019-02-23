@@ -138,3 +138,22 @@ declare export function createSubscriber<ST, AC, SE, PR>(
     displayName?: string,
   |}
 ): SubscriberComponent<SE, AC, PR>;
+
+declare export function createHook<ST, AC>(
+  store: Store<ST, AC>
+): () => [ST, AC];
+
+// declare export function createHook<SE, AC>(
+//   Container: ContainerType<any>,
+//   selector: (state: any) => SE
+// ): () => [SE, AC];
+
+// declare export function createHook<AC>(
+//   Container: ContainerType<any>,
+//   selector: null
+// ): () => [{}, AC];
+
+declare export function createHook<ST, AC, SE, PR>(
+  store: Store<ST, AC>,
+  selector: null | ((state: ST, props: PR) => SE)
+): () => [SE, AC];

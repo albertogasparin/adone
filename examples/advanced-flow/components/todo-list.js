@@ -1,8 +1,8 @@
 // @flow
 import React from 'react';
 
-import { UserSelectedSubscriber } from '../baskets/user';
-import { TodoContainer, TodoSubscriber } from '../baskets/todo';
+import { UserSelectedSubscriber, useUserSelected } from '../baskets/user';
+import { TodoContainer, TodoSubscriber, useTodo } from '../baskets/todo';
 import { type TodoModel } from '../baskets/todo/types';
 
 type TodoItemProps = {
@@ -32,7 +32,7 @@ const TodoList = ({ todos, loading, selectedUser }: TodoListProps) =>
     </ul>
   );
 
-const SubscribedTodoList = () => (
+export const TodoListRpc = () => (
   <UserSelectedSubscriber>
     {({ sel }) => (
       <TodoContainer selectedUser={sel}>
@@ -46,4 +46,20 @@ const SubscribedTodoList = () => (
   </UserSelectedSubscriber>
 );
 
-export default SubscribedTodoList;
+type UserTodosProps = { selectedUser: ?string };
+
+const UserTodos = ({ selectedUser }: UserTodosProps) => {
+  const [{ data, loading }] = useTodo();
+  return (
+    <TodoList todos={data} loading={loading} selectedUser={selectedUser} />
+  );
+};
+
+export const TodoListHook = () => {
+  const [{ sel }] = useUserSelected();
+  return (
+    <TodoContainer selectedUser={sel}>
+      <UserTodos selectedUser={sel} />
+    </TodoContainer>
+  );
+};

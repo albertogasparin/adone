@@ -1,6 +1,11 @@
 // @flow
 
-import { createStore, createSubscriber, type Action } from 'react-adone';
+import {
+  createStore,
+  createSubscriber,
+  createHook,
+  type Action,
+} from 'react-adone';
 
 type State = {
   data: string[],
@@ -29,3 +34,5 @@ const Store = createStore<State, Actions>({
 });
 
 export const MessagesSubscriber = createSubscriber<*, *>(Store);
+
+export const useMessages = createHook<State, Actions>(Store);

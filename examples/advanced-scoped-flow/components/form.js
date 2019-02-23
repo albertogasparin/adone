@@ -4,6 +4,7 @@ import {
   createStore,
   createContainer,
   createSubscriber,
+  createHook,
   type Action,
 } from 'react-adone';
 
@@ -61,3 +62,5 @@ export const FormContainer = createContainer<*, *, ContainerProps>(Store, {
 });
 
 export const FormSubscriber = createSubscriber<*, *>(Store);
+
+export const useForm = createHook<State, Actions>(Store);

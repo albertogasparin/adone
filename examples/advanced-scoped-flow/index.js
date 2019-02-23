@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { defaults } from 'react-adone';
 
-import Chat from './chat';
+import { ChatRpc } from './chat-rpc';
+import { ChatHook } from './chat-hook';
 /**
  * Enable Redux devtools support
  */
@@ -47,13 +48,14 @@ class App extends Component<
         <button onClick={this.reset}>Reset theme (scope id change)</button>
         <button onClick={this.remount}>Reset form (local scope remount)</button>
         <main>
-          <Chat
+          <ChatRpc
             key={String(remount)}
             id={String(reset)}
             remoteUsers={remoteUsers}
             defaultColor="#FED"
           />
-          <Chat
+          <hr />
+          <ChatHook
             key={String(remount + 1)}
             id={String(reset + 1)}
             remoteUsers={remoteUsers}

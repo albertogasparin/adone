@@ -1,6 +1,11 @@
 // @flow
 
-import { createStore, createContainer, createSubscriber } from 'react-adone';
+import {
+  createStore,
+  createContainer,
+  createSubscriber,
+  createHook,
+} from 'react-adone';
 import type { State } from './types';
 
 import * as actions from './actions';
@@ -35,3 +40,10 @@ export const UserSelectedSubscriber = createSubscriber<
 >(Store, {
   selector: selectors.getSelected,
 });
+
+export const useUser = createHook<State, Actions>(Store);
+
+export const useUserSelected = createHook<*, *, UserSelectedState, {||}>(
+  Store,
+  selectors.getSelected
+);

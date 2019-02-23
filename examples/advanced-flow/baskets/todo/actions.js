@@ -9,7 +9,12 @@ const TODOS: { [id: string]: TodoModel[] } = {
   '2': [{ title: 'Do the dishes' }],
 };
 
-export const load = (uid: string): Action<State> => async ({ setState }) => {
+export const load = (uid: string): Action<State> => async ({
+  setState,
+  getState,
+}) => {
+  if (getState().loading) return;
+
   setState({
     loading: true,
     data: null, // reset
