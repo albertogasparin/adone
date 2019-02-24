@@ -10,7 +10,7 @@ import {
 } from '..';
 
 /**
- * Basket types tests
+ * Store types tests
  */
 type State = {| count: number |};
 type Actions = typeof actions;
@@ -80,12 +80,12 @@ Test = (
 );
 
 Test = (
-  // $ExpectError Basket actions should be correcly typed
+  // $ExpectError Actions should be correcly typed
   <TypeSubscriber>{(__, { increment }) => increment()}</TypeSubscriber>
 );
 
 Test = (
-  // $ExpectError Basket state should be read only
+  // $ExpectError State should be read only
   <TypeSubscriber>{state => (state.count = 1)}</TypeSubscriber>
 );
 

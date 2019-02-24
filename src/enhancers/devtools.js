@@ -1,45 +1,45 @@
 import defaults from '../defaults';
 
-const connectDevTools = store => {
+const connectDevTools = storeState => {
   const devTools = window.__REDUX_DEVTOOLS_EXTENSION__.connect({
-    name: `Basket ${store.key}`,
+    name: `Store ${storeState.key}`,
   });
-  devTools.init(store.getState());
+  devTools.init(storeState.getState());
   devTools.subscribe(message => {
     if (message.type === 'DISPATCH' && message.state) {
-      store.setState(JSON.parse(message.state));
+      storeState.setState(JSON.parse(message.state));
     }
   });
   return devTools;
 };
 
-const withDevtools = createStore => (...args) => {
-  const store = createStore(...args);
+const withDevtools = createStoreState => (...args) => {
+  const storeState = createStoreState(...args);
 
   if (defaults.devtools && window && window.__REDUX_DEVTOOLS_EXTENSION__) {
-    const origMutator = store.mutator;
+    const origMutator = storeState.mutator;
     let devTools;
     const devtoolMutator = arg => {
       const result = origMutator(arg);
       try {
         if (!devTools) {
-          devTools = connectDevTools(store);
+          devTools = connectDevTools(storeState);
         }
         devTools.send(
-          { type: store.mutator._action, payload: arg },
-          store.getState(),
+          { type: storeState.mutator._action, payload: arg },
+          storeState.getState(),
           {},
-          store.key
+          storeState.key
         );
       } catch (err) {
         /* ignore devtools errors */
       }
       return result;
     };
-    store.mutator = devtoolMutator;
+    storeState.mutator = devtoolMutator;
   }
 
-  return store;
+  return storeState;
 };
 
 export default withDevtools;

@@ -5,8 +5,8 @@ Adone supports Redux-like middlewares. They can be added via `defaults.middlewar
 ```js
 import { defaults } from 'react-adone';
 
-const logger = store => next => fn => {
-  console.log('Updating', store.key);
+const logger = storeState => next => fn => {
+  console.log('Updating', storeState.key);
   const result = next(fn);
   console.log('Changed', result.changes);
   return result;

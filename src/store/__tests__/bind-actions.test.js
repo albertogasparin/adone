@@ -1,14 +1,14 @@
 /* eslint-env jest */
 
-import { basketMock, storeMock } from './mocks';
+import { actionsMock, storeStateMock } from '../../__tests__/mocks';
 import { bindActions } from '../bind-actions';
-import combineMiddlewares from '../middlewares';
+import combineMiddlewares from '../../middlewares';
 
-jest.mock('../middlewares');
+jest.mock('../../middlewares');
 
 describe('bindActions', () => {
   it('should return all actions bound', () => {
-    const result = bindActions(basketMock.actions, storeMock);
+    const result = bindActions(actionsMock, storeStateMock);
     expect(result).toEqual({
       increase: expect.any(Function),
       decrease: expect.any(Function),
@@ -18,17 +18,17 @@ describe('bindActions', () => {
   it('should bound actions providing mutator, getState and container props', () => {
     const actionInner = jest.fn();
     const mutator = jest.fn();
-    basketMock.actions.increase.mockReturnValue(actionInner);
+    actionsMock.increase.mockReturnValue(actionInner);
     combineMiddlewares.mockReturnValue(mutator);
-    const result = bindActions(basketMock.actions, storeMock, () => ({
+    const result = bindActions(actionsMock, storeStateMock, () => ({
       url: '',
     }));
     result.increase(1);
-    expect(basketMock.actions.increase).toHaveBeenCalledWith(1);
+    expect(actionsMock.increase).toHaveBeenCalledWith(1);
     expect(actionInner).toHaveBeenCalledWith(
       {
         setState: expect.any(Function),
-        getState: storeMock.getState,
+        getState: storeStateMock.getState,
         actions: expect.objectContaining({
           increase: expect.any(Function),
           decrease: expect.any(Function),

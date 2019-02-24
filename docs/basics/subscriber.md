@@ -10,8 +10,8 @@ import { CounterSubscriber } from './components/counter';
 
 const MyCounter = () => (
   <CounterSubscriber>
-    {/* The basket actions and store state get spread for easy consumption */}
-    {({ count, increment }) => (
+    {/* Store state is the first argument and actions are the second one */}
+    {({ count }, { increment }) => (
       <div>
         {count}
         <button onClick={increment}>Add one</button>

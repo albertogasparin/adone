@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { defaults } from 'react-adone';
 
-import { ChatRpc } from './chat-rpc';
-import { ChatHook } from './chat-hook';
+import { ChatRpc } from './views/chat-rpc';
+import { ChatHook } from './views/chat-hook';
 /**
  * Enable Redux devtools support
  */

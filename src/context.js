@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { defaultRegistry } from './registry';
+import { defaultRegistry } from './store';
 
 const { Provider, Consumer } = React.createContext({
   globalRegistry: defaultRegistry,
-  getBasket: defaultRegistry.getBasket,
+  getStore: defaultRegistry.getStore,
 });
 
 // Reading context value from owner as suggested by gaearon

@@ -2,7 +2,8 @@
 
 import ContainerClass from '../container';
 import SubscriberClass from '../subscriber';
-import { createStore, createContainer, createSubscriber } from '../creators';
+import { createContainer, createSubscriber } from '../creators';
+import { createStore } from '../../store';
 import hash from '../../utils/hash';
 
 jest.mock('../../utils/hash', () => ({
@@ -31,7 +32,7 @@ describe('creators', () => {
 
       expect(Subscriber.prototype).toBeInstanceOf(SubscriberClass);
       expect(Subscriber.displayName).toEqual('Subscriber(test)');
-      expect(Subscriber.basketType).toEqual({
+      expect(Subscriber.storeType).toEqual({
         key: ['test', 'mockedHash'],
         initialState: {
           foo: 'bar',
@@ -62,7 +63,7 @@ describe('creators', () => {
 
       expect(Container.prototype).toBeInstanceOf(ContainerClass);
       expect(Container.displayName).toEqual('Container(test)');
-      expect(Container.basketType).toEqual({
+      expect(Container.storeType).toEqual({
         key: ['test', 'mockedHash'],
         initialState: {
           foo: 'bar',
@@ -93,7 +94,7 @@ describe('creators', () => {
         selector: selectorMock,
         displayName: 'SubscriberSelector',
       });
-      expect(SubscriberSelector.basketType).toEqual(Store);
+      expect(SubscriberSelector.storeType).toEqual(Store);
       expect(SubscriberSelector.displayName).toEqual('SubscriberSelector');
       expect(SubscriberSelector.selector).toEqual(selectorMock);
     });

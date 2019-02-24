@@ -1,6 +1,6 @@
 /* eslint-env jest */
 
-import { storeMock } from './mocks';
+import { storeStateMock } from './mocks';
 import applyMiddleware from '../middlewares';
 import defaults from '../defaults';
 
@@ -10,7 +10,7 @@ describe('applyMiddleware', () => {
   it('should always build update middleware', () => {
     defaults.mutator = jest.fn();
     const mutation = {};
-    const combinedMw = applyMiddleware(storeMock, []);
+    const combinedMw = applyMiddleware(storeStateMock, []);
     combinedMw(mutation);
     expect(defaults.mutator).toHaveBeenCalled();
   });
@@ -18,16 +18,16 @@ describe('applyMiddleware', () => {
   it('should build combined middlewares', () => {
     const mutation = {};
     const middlewareSpy = jest.fn();
-    const middleware = store => next => fn => {
+    const middleware = storeState => next => fn => {
       const result = next(fn);
-      middlewareSpy(store, next, fn, result);
+      middlewareSpy(storeState, next, fn, result);
       return result;
     };
 
-    const combinedMw = applyMiddleware(storeMock, [middleware]);
+    const combinedMw = applyMiddleware(storeStateMock, [middleware]);
     combinedMw(mutation);
     expect(middlewareSpy).toHaveBeenCalledWith(
-      storeMock,
+      storeStateMock,
       expect.any(Function),
       mutation,
       undefined

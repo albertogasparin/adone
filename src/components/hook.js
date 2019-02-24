@@ -5,13 +5,11 @@ import memoize from '../utils/memoize';
 const EMPTY_STATE = {};
 
 export function createHook(Store, selector = state => state) {
-  const basketType = Store;
-
   return function(props) {
     // instead of using "useContext" we get the context value with
     // a custom implementation so our components do not render on ctx change
     const ctx = readContext();
-    const { store, actions } = ctx.getBasket(basketType);
+    const { storeState, actions } = ctx.getStore(Store);
 
     // If selector is not null, create a ref to the memoized version of it
     // Otherwise always return same value, as we ignore state
@@ -19,7 +17,7 @@ export function createHook(Store, selector = state => state) {
       ? useCallback(memoize(selector), [])
       : () => EMPTY_STATE;
 
-    const currentState = stateSelector(store.getState(), props);
+    const currentState = stateSelector(storeState.getState(), props);
     let [prevState, setState] = useState(currentState);
 
     // We store update function into a ref so when called has fresh state
@@ -44,12 +42,12 @@ export function createHook(Store, selector = state => state) {
       // we call the current ref fn so state is fresh
       const onUpdate = updState => onUpdateRef.current(updState);
       // after component is mounted or store changed, we subscribe
-      const unsubscribe = store.subscribe(onUpdate);
+      const unsubscribe = storeState.subscribe(onUpdate);
       return () => {
         // fired on unmount or every time store changes
         unsubscribe();
       };
-    }, [store]);
+    }, [storeState]);
 
     return [currentState, actions];
   };

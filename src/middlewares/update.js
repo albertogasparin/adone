@@ -1,11 +1,11 @@
-const updateMiddleware = store => next => arg => {
+const updateMiddleware = storeState => next => arg => {
   let output;
-  const state = store.getState();
+  const state = storeState.getState();
   const nextState = next(state, arg, out => {
     output = out;
   });
   if (nextState !== state) {
-    store.setState(nextState);
+    storeState.setState(nextState);
   }
   return output;
 };

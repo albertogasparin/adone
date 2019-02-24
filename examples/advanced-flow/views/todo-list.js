@@ -1,9 +1,9 @@
 // @flow
 import React from 'react';
 
-import { UserSelectedSubscriber, useUserSelected } from '../baskets/user';
-import { TodoContainer, TodoSubscriber, useTodo } from '../baskets/todo';
-import { type TodoModel } from '../baskets/todo/types';
+import { UserSelectedSubscriber, useUserSelected } from '../components/user';
+import { TodoContainer, TodoSubscriber, useTodo } from '../components/todo';
+import { type TodoModel } from '../components/todo/types';
 
 type TodoItemProps = {
   todo: TodoModel,

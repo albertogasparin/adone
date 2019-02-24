@@ -15,9 +15,9 @@ yarn add react-adone
 ```
 
 ```js
-import { createComponents } from 'react-adone';
+import { createStore, createSubscriber } from 'react-adone';
 
-const { Subscriber } = createComponents({
+const Store = createStore({
   // value of the store on initialisation
   initialState = {
     count: 0,
@@ -31,23 +31,24 @@ const { Subscriber } = createComponents({
       });
     },
   },
-  // optional, used for debugging
+  // optional, mostly used for easy debugging
   name: 'counter',
 })
 
+const CounterSubscriber = createSubscriber(Store);
 
 const App = () => (
   <div>
     <h1>My counter</h1>
-    <Subscriber>
-      {/* The basket actions and store state get spread for easy consumption */}
-      {({ count, increment }) => (
+    <CounterSubscriber>
+      {/* Store state is the first argument and actions are the second one */}
+      {({ count }, { increment }) => (
         <div>
           {count}
           <button onClick={increment}>Add +1</button>
         </div>
       )}
-    </Subscriber>
+    </CounterSubscriber>
   </div>
 );
 ```

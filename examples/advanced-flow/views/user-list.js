@@ -1,8 +1,8 @@
 // @flow
 import React from 'react';
 
-import { UserContainer, UserSubscriber, useUser } from '../baskets/user';
-import { type UserModel } from '../baskets/user/types';
+import { UserContainer, UserSubscriber, useUser } from '../components/user';
+import { type UserModel } from '../components/user/types';
 
 type UserItemProps = {
   user: UserModel,

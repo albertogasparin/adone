@@ -9,32 +9,32 @@ export default class Subscriber extends Component {
     children: PropTypes.func.isRequired,
   };
 
-  static basketType = null;
+  static storeType = null;
   static selector = state => state;
 
   static getDerivedStateFromProps(nextProps, prevState) {
     // Get fresh state at every re-render, so if a parent triggers
     // a re-render before the component subscription calls onUpdate()
     // we already serve the updated state and skip the additional render
-    const nextBasketState = prevState.getBasketState(nextProps, true);
+    const nextStoreStateValue = prevState.getStoreStateValue(nextProps, true);
     // just check simple equality as shallow check done by memoized selector
-    if (prevState.basketState !== nextBasketState) {
-      return { basketState: nextBasketState };
+    if (prevState.storeStateValue !== nextStoreStateValue) {
+      return { storeStateValue: nextStoreStateValue };
     }
     return null;
   }
 
-  basket = null;
+  store = null;
   subscription = null;
   selector = this.constructor.selector && memoize(this.constructor.selector);
 
   constructor(props) {
     super(props);
     this.state = {
-      basketState: {},
+      storeStateValue: {},
       // stored to make them available in getDerivedStateFromProps
       // as js context there is null https://github.com/facebook/react/issues/12612
-      getBasketState: this.getBasketState,
+      getStoreStateValue: this.getStoreStateValue,
     };
   }
 
@@ -52,75 +52,73 @@ export default class Subscriber extends Component {
   }
 
   componentDidUpdate() {
-    // ensure subscription is still to the correct basket
+    // ensure subscription is still to the correct store
     // as parent scope might change between renders
     this.subscribeToUpdates();
   }
 
   componentWillUnmount() {
-    this.basket = null;
+    this.store = null;
     if (this.subscription) {
       this.subscription.remove();
       this.subscription = null;
     }
   }
 
-  getBasketState = (nextProps = this.props, fromContext = false) => {
+  getStoreStateValue = (nextProps = this.props, fromContext = false) => {
     // eslint-disable-next-line no-unused-vars
     const { children, ...props } = nextProps;
-    // We can get baskets from context ONLY during rendering phase
+    // We can get stores from context ONLY during rendering phase
     // overwise React will return the default ctx value!
-    this.basket = fromContext
-      ? this.getBasketInstanceFromContext()
-      : this.basket;
-    const basketState = this.basket.store.getState();
+    this.store = fromContext ? this.getStoreFromContext() : this.store;
+    const currentStoreState = this.store.storeState.getState();
     return this.selector
-      ? this.selector(basketState, props)
-      : this.state.basketState;
+      ? this.selector(currentStoreState, props)
+      : this.state.storeStateValue;
   };
 
-  getBasketInstanceFromContext() {
-    const { basketType } = this.constructor;
-    // We use React context just to get the baskets registry
+  getStoreFromContext() {
+    const { storeType } = this.constructor;
+    // We use React context just to get the stores registry
     // then we rely on our internal pub/sub to get updates
     // because context API doesn't have builtin selectors (yet).
     const ctx = readContext();
-    return ctx.getBasket(basketType);
+    return ctx.getStore(storeType);
   }
 
   subscribeToUpdates() {
-    // in case basket has been recreated during an update (due to scope change)
-    if (this.subscription && this.subscription.basket !== this.basket) {
+    // in case store has been recreated during an update (due to scope change)
+    if (this.subscription && this.subscription.store !== this.store) {
       this.subscription.remove();
       this.subscription = null;
     }
     if (!this.subscription) {
       this.subscription = {
-        basket: this.basket,
-        remove: this.basket.store.subscribe(this.onUpdate),
+        store: this.store,
+        remove: this.store.storeState.subscribe(this.onUpdate),
       };
     }
   }
 
   onUpdate = () => {
-    // Ensure component is still mounted and has a basket attached
-    if (!this.basket) return;
-    const prevBasketState = this.state.basketState;
-    const nextBasketState = this.getBasketState();
+    // Ensure component is still mounted and has a store attached
+    if (!this.store) return;
+    const prevStoreStateValue = this.state.storeStateValue;
+    const nextStoreStateValue = this.getStoreStateValue();
     // Only update if state changed
     // just check simple equality as shallow check done by memoized selector
-    if (prevBasketState !== nextBasketState) {
+    if (prevStoreStateValue !== nextStoreStateValue) {
       // nextState will recalculated by gDSFP anyway
-      this.setState({ basketState: nextBasketState });
+      this.setState({ storeStateValue: nextStoreStateValue });
     }
   };
 
   render() {
     // this is needed for compat with React<16.5
     // as gDSFP in not called before first render
-    const basketState = this.basket
-      ? this.state.basketState
-      : this.getBasketState(this.props, true);
-    return this.props.children(basketState, this.basket.actions);
+    const storeStateValue = this.store
+      ? this.state.storeStateValue
+      : this.getStoreStateValue(this.props, true);
+    return this.props.children(storeStateValue, this.store.actions);
   }
 }

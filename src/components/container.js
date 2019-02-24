@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { Provider, readContext } from '../context';
-import BasketRegistry from '../registry';
+import { StoreRegistry, bindAction, bindActions } from '../store';
 import shallowEqual from '../utils/shallow-equal';
-import { bindAction, bindActions } from '../bind-actions';
 
 export default class Container extends Component {
   static propTypes = {
@@ -13,7 +12,7 @@ export default class Container extends Component {
     isGlobal: PropTypes.bool,
   };
 
-  static basketType = null;
+  static storeType = null;
   static hooks = null;
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -23,7 +22,7 @@ export default class Container extends Component {
     let nextState = null;
     if (hasScopeChanged) {
       const actions = prevState.bindContainerActions(scope);
-      nextState = { scope, scopedBasketActions: actions };
+      nextState = { scope, scopedActions: actions };
     }
     // We trigger the action here so subscribers get new values ASAP
     // onInit this is called twice (contructor and here) to support React<16.5
@@ -35,13 +34,13 @@ export default class Container extends Component {
   constructor(props) {
     super(props);
     const ctx = readContext();
-    this.registry = new BasketRegistry('__local__');
+    this.registry = new StoreRegistry('__local__');
 
     this.state = {
       api: {
         globalRegistry: ctx.globalRegistry,
-        getBasket: (basket, scope) =>
-          this.getScopedBasket(basket, scope) || ctx.getBasket(basket),
+        getStore: (Store, scope) =>
+          this.getScopedStore(Store, scope) || ctx.getStore(Store),
       },
       // stored to make them available in getDerivedStateFromProps
       // as js context there is null https://github.com/facebook/react/issues/12612
@@ -52,40 +51,40 @@ export default class Container extends Component {
 
     // this is needed for compat with React<16.5
     // as gDSFP in not called before first render
-    this.state.scopedBasketActions = this.bindContainerActions(props.scope);
+    this.state.scopedActions = this.bindContainerActions(props.scope);
     this.triggerContainerAction(props);
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.scope !== prevProps.scope) {
-      this.deleteScopedBasket(prevProps.scope);
+      this.deleteScopedStore(prevProps.scope);
     }
   }
 
   componentWillUnmount() {
-    this.deleteScopedBasket();
+    this.deleteScopedStore();
   }
 
   bindContainerActions = scope => {
-    const { basketType, hooks } = this.constructor;
+    const { storeType, hooks } = this.constructor;
     const { api } = this.state;
     // we explicitly pass scope as it might be changed
-    const { store } = api.getBasket(basketType, scope);
+    const { storeState } = api.getStore(storeType, scope);
 
     const actions = bindActions(
-      basketType.actions,
-      store,
+      storeType.actions,
+      storeState,
       this.getContainerProps
     );
     this.onInit = bindAction(
-      store,
+      storeState,
       hooks.onInit,
       'onInit',
       this.getContainerProps,
       actions
     );
     this.onUpdate = bindAction(
-      store,
+      storeState,
       hooks.onUpdate,
       'onUpdate',
       this.getContainerProps,
@@ -120,25 +119,25 @@ export default class Container extends Component {
     return isLocal ? this.registry : this.state.api.globalRegistry;
   }
 
-  getScopedBasket(basket, scopeId = this.props.scope) {
-    const { basketType } = this.constructor;
-    if (basket !== basketType) {
+  getScopedStore(Store, scopeId = this.props.scope) {
+    const { storeType } = this.constructor;
+    if (Store !== storeType) {
       return null;
     }
-    const { store } = this.getRegistry().getBasket(basket, scopeId);
+    const { storeState } = this.getRegistry().getStore(Store, scopeId);
     // instead of returning global bound actions
     // we return the ones with the countainer props binding
     return {
-      store,
-      actions: this.state.scopedBasketActions,
+      storeState,
+      actions: this.state.scopedActions,
     };
   }
 
-  deleteScopedBasket(scopeId = this.props.scope) {
-    const { basketType } = this.constructor;
-    const { store } = this.getScopedBasket(basketType, scopeId);
-    if (!store.listeners().length) {
-      this.getRegistry().deleteBasket(basketType, scopeId);
+  deleteScopedStore(scopeId = this.props.scope) {
+    const { storeType } = this.constructor;
+    const { storeState } = this.getScopedStore(storeType, scopeId);
+    if (!storeState.listeners().length) {
+      this.getRegistry().deleteStore(storeType, scopeId);
     }
   }
 

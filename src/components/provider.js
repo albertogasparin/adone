@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { Provider } from '../context';
-import BasketRegistry from '../registry';
+import { StoreRegistry } from '../store';
 
 export default class AdoneProvider extends Component {
   static propTypes = {
@@ -16,13 +16,13 @@ export default class AdoneProvider extends Component {
 
   constructor(props) {
     super(props);
-    this.registry = new BasketRegistry();
+    this.registry = new StoreRegistry();
     this.registry.configure({
       initialStates: props.initialStates,
     });
     this.state = {
       globalRegistry: this.registry,
-      getBasket: this.registry.getBasket,
+      getStore: this.registry.getStore,
     };
   }
 

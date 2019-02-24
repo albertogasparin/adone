@@ -10,9 +10,9 @@ Taking the good parts of Redux and React Context to build a flexible, scalable a
 
 ## Philosophy
 
-Adone is heavily inspired by Redux, the main difference is the lack of reducers. Store name, actions, default state and selectors are combined in a single entity called Basket. Instead of React Provider and Consumer, we have `Container` and `Subscriber` that define the store and make it's state (or part of it) and the actions available via render-prop API.
+Adone is heavily inspired by Redux, the main difference is the lack of reducers. Instead of React Provider and Consumer, we have `Container` and `Subscriber`, connected to the same instance of a Store (defined as actions and initial state) and make it's state (or part of it) and the actions bound to the instance available via render-prop API.
 
-Each `Subscriber` is responsible to get the instantiated store (creating a new one with `initialState` if necessary). That makes sharing state across you project extremely easy.
+Each `Subscriber` is responsible to get the instantiated Store (creating a new one with `initialState` if necessary). That makes sharing state across you project extremely easy.
 
 Similar to Redux thunk, actions receive a set of arguments to get and mutate the state. The default `setState` implementation is similar to React `setState`, called with an object that will be shallow merged with the current state. But you are free to replace that with something different, even like `immer` for instance.
 
@@ -27,27 +27,27 @@ yarn add react-adone
 #### Creating a Subscriber
 
 ```js
-import { createComponents } from 'react-adone';
+import { createStore, createSubscriber } from 'react-adone';
 
-const initialState = {
-  count: 0,
-};
-
-const actions = {
-  increment: () => ({ setState, getState }) => {
-    // setState() shallow merge the provider partial state going through middlewares
-    // unlike React setState though, it is syncronous and accepts just objects
-    setState({
-      count: getState().count + 1,
-    });
+const Store = createStore({
+  // value of the store on initialisation
+  initialState = {
+    count: 0,
   },
-};
+  // actions that trigger store mutation
+  actions: {
+    increment: (by = 1) => ({ setState, getState }) => {
+      // mutate state syncronously
+      setState({
+        count: getState().count + by,
+      });
+    },
+  },
+  // optional, mostly used for easy debugging
+  name: 'counter',
+})
 
-export const { Subscriber: CounterSubscriber } = createComponents({
-  initialState,
-  actions
-  name: 'counter', // optional, but helps with debugging
-});
+const CounterSubscriber = createSubscriber(Store);
 ```
 
 ```js
@@ -58,8 +58,8 @@ const App = () => (
   <div>
     <h1>My counter</h1>
     <CounterSubscriber>
-      {/* The basket actions and store state get spread for easy consumption */}
-      {({ count, increment }) => (
+      {/* Store state is the first argument and actions are the second one */}
+      {({ count }, { increment }) => (
         <div>
           {count}
           <button onClick={increment}>+</button>

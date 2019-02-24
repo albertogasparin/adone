@@ -4,7 +4,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import AdoneProvider from '../provider';
-import BasketRegistry from '../../registry';
+import { StoreRegistry } from '../../store';
 
 describe('AdoneProvider', () => {
   describe('render', () => {
@@ -15,22 +15,22 @@ describe('AdoneProvider', () => {
       expect(wrapper.props()).toEqual({
         children,
         value: {
-          getBasket: expect.any(Function),
-          globalRegistry: expect.any(BasketRegistry),
+          getStore: expect.any(Function),
+          globalRegistry: expect.any(StoreRegistry),
         },
       });
     });
   });
 
   describe('state', () => {
-    it('should have basket registry in state', () => {
+    it('should have store registry in state', () => {
       const children = <div />;
       const instance = shallow(
         <AdoneProvider>{children}</AdoneProvider>
       ).instance();
       expect(instance.registry).toBeDefined();
       expect(instance.state.globalRegistry).toBe(instance.registry);
-      expect(instance.state.getBasket).toBe(instance.registry.getBasket);
+      expect(instance.state.getStore).toBe(instance.registry.getStore);
     });
   });
 });

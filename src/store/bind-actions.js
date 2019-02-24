@@ -1,27 +1,27 @@
-import defaults from './defaults';
+import defaults from '../defaults';
 
-const createNamedMutator = (store, actionName) =>
+const createNamedMutator = (storeState, actionName) =>
   defaults.devtools
     ? arg => {
-        store.mutator._action = actionName;
-        return store.mutator(arg);
+        storeState.mutator._action = actionName;
+        return storeState.mutator(arg);
       }
-    : store.mutator;
+    : storeState.mutator;
 
 export const bindAction = (
-  store,
+  storeState,
   actionFn,
   actionKey,
   getContainerProps,
   otherActions
 ) => {
   // Setting mutator name so we can log action name for better debuggability
-  const namedMutator = createNamedMutator(store, actionKey);
+  const namedMutator = createNamedMutator(storeState, actionKey);
   const dispatch = thunkFn =>
     thunkFn(
       {
         setState: namedMutator,
-        getState: store.getState,
+        getState: storeState.getState,
         actions: otherActions,
         dispatch,
       },
@@ -30,8 +30,12 @@ export const bindAction = (
   return (...args) => dispatch(actionFn(...args));
 };
 
-export const bindActions = (actions, store, getContainerProps = () => ({})) =>
+export const bindActions = (
+  actions,
+  storeState,
+  getContainerProps = () => ({})
+) =>
   Object.keys(actions).reduce((acc, k) => {
-    acc[k] = bindAction(store, actions[k], k, getContainerProps, actions);
+    acc[k] = bindAction(storeState, actions[k], k, getContainerProps, actions);
     return acc;
   }, {});

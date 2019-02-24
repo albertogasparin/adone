@@ -4,9 +4,9 @@
 import type { Node } from 'react';
 
 /**
- * ST: Full basket state
- * PI: Picked basket state (or result)
- * AC: Basket actions
+ * ST: Full store state
+ * PI: Picked store state (or result)
+ * AC: Store actions
  */
 
 type SetState<ST> = ($Shape<ST>) => void;
@@ -48,10 +48,10 @@ declare export class Registry {
   configure: ({
     initialStates?: { [key: string]: Object },
   }) => void;
-  baskets: Map<string, StoreInstance<any, any>>;
-  initBasket: <ST, AC>(key: string, Store<ST, AC>) => StoreInstance<ST, AC>;
-  getBasket: <ST, AC>(Store<ST, AC>, scopeId: string) => StoreInstance<ST, AC>;
-  deleteBasket: <ST, AC>(Store<ST, AC>, scopeId: string) => void;
+  stores: Map<string, StoreInstance<any, any>>;
+  initStore: <ST, AC>(key: string, Store<ST, AC>) => StoreInstance<ST, AC>;
+  getStore: <ST, AC>(Store<ST, AC>, scopeId: string) => StoreInstance<ST, AC>;
+  deleteStore: <ST, AC>(Store<ST, AC>, scopeId: string) => void;
 }
 
 declare export var defaultRegistry: Registry;
@@ -62,7 +62,7 @@ declare export class AdoneProvider extends React$Component<
   },
   {
     globalRegistry: Registry,
-    getBasket: $PropertyType<Registry, 'getBasket'>,
+    getStore: $PropertyType<Registry, 'getStore'>,
   }
 > {
   registry: Registry;

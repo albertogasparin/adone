@@ -3,15 +3,15 @@
 import React, { Component } from 'react';
 import { shallow, mount } from 'enzyme';
 
-import { basketMock, storeMock } from '../../__tests__/mocks';
+import { StoreMock, storeStateMock } from '../../__tests__/mocks';
 import SubscriberComponent from '../subscriber';
 import AdoneProvider from '../provider';
-import { defaultRegistry } from '../../registry';
+import { defaultRegistry } from '../../store/registry';
 
-jest.mock('../../registry', () => {
+jest.mock('../../store/registry', () => {
   const mockRegistry = {
     configure: jest.fn(),
-    getBasket: jest.fn(),
+    getStore: jest.fn(),
   };
   return {
     __esModule: true,
@@ -33,6 +33,7 @@ describe('Subscriber', () => {
   const modes = {
     withProvider: (props = {}) => {
       const children = jest.fn().mockReturnValue(null);
+      // const AdoneProvider = require('../provider').default;
       const getElement = () => (
         <AdoneProvider>
           <Subscriber {...props}>{children}</Subscriber>
@@ -69,33 +70,35 @@ describe('Subscriber', () => {
     describe(key, () => {
       beforeEach(() => {
         Subscriber = class extends SubscriberComponent {};
-        Subscriber.basketType = basketMock;
-        defaultRegistry.getBasket.mockReturnValue({
-          store: storeMock,
-          actions: basketMock.actions,
+        Subscriber.storeType = StoreMock;
+        defaultRegistry.getStore.mockReturnValue({
+          storeState: storeStateMock,
+          actions: StoreMock.actions,
         });
-        storeMock.getState.mockReturnValue(basketMock.initialState);
+        storeStateMock.getState.mockReturnValue(StoreMock.initialState);
       });
 
-      it('should get the basket instance from registry', () => {
+      it('should get the store instance from registry', () => {
         const { getShallow } = setup();
         getShallow();
         // we check defaultRegistry even when provider is used
         // as the mock is the same
-        expect(defaultRegistry.getBasket).toHaveBeenCalledWith(basketMock);
+        expect(defaultRegistry.getStore).toHaveBeenCalledWith(StoreMock);
       });
 
-      it('should save basket instance locally and listen', () => {
+      it('should save store instance locally and listen', () => {
         const { getShallow } = setup();
         const instance = getShallow().instance();
-        expect(instance.basket).toEqual({
+        expect(instance.store).toEqual({
+          storeState: storeStateMock,
           actions: expect.any(Object),
-          store: storeMock,
         });
-        expect(storeMock.subscribe).toHaveBeenCalledWith(instance.onUpdate);
+        expect(storeStateMock.subscribe).toHaveBeenCalledWith(
+          instance.onUpdate
+        );
       });
 
-      it('should render children with basket data and actions', () => {
+      it('should render children with store data and actions', () => {
         const { getShallow, children } = setup();
         getShallow();
         expect(children).toHaveBeenCalledTimes(1);
@@ -104,8 +107,8 @@ describe('Subscriber', () => {
 
       it('should update on mount if store value changes in meantime', () => {
         const { getMount, children } = setup();
-        storeMock.getState.mockReturnValueOnce({ count: 1 });
-        storeMock.getState.mockReturnValue({ count: 2 });
+        storeStateMock.getState.mockReturnValueOnce({ count: 1 });
+        storeStateMock.getState.mockReturnValue({ count: 2 });
         getMount().instance();
         expect(children).toHaveBeenCalledTimes(2);
         expect(children).toHaveBeenCalledWith({ count: 1 }, actions);
@@ -114,9 +117,9 @@ describe('Subscriber', () => {
 
       it('should update when store calls update listener', () => {
         const { getMount, children } = setup();
-        storeMock.getState.mockReturnValue({ count: 1 });
+        storeStateMock.getState.mockReturnValue({ count: 1 });
         const instance = getMount().instance();
-        storeMock.getState.mockReturnValue({ count: 2 });
+        storeStateMock.getState.mockReturnValue({ count: 2 });
         instance.onUpdate();
         expect(children).toHaveBeenCalledTimes(2);
         expect(children).toHaveBeenCalledWith({ count: 1 }, actions);
@@ -132,14 +135,14 @@ describe('Subscriber', () => {
         }
         const wrapper = mount(<App />);
         // simulate store change -> parent re-render -> yield listener update
-        storeMock.getState.mockReturnValue({ count: 1 });
+        storeStateMock.getState.mockReturnValue({ count: 1 });
         wrapper.setProps({ foo: 1 });
         wrapper
           .find(Subscriber)
           .instance()
           .onUpdate();
 
-        expect(storeMock.getState).toHaveBeenCalledTimes(4);
+        expect(storeStateMock.getState).toHaveBeenCalledTimes(4);
         expect(children).toHaveBeenCalledTimes(2);
         expect(children).toHaveBeenCalledWith({ count: 1 }, actions);
       });
@@ -147,10 +150,10 @@ describe('Subscriber', () => {
       it('should remove listener from store on unmount', () => {
         const { getMount } = setup();
         const unsubscribeMock = jest.fn();
-        storeMock.subscribe.mockReturnValue(unsubscribeMock);
+        storeStateMock.subscribe.mockReturnValue(unsubscribeMock);
         const instance = getMount().instance();
         expect(instance.subscription).toEqual({
-          basket: instance.basket,
+          store: instance.store,
           remove: unsubscribeMock,
         });
         instance.componentWillUnmount();
@@ -162,7 +165,7 @@ describe('Subscriber', () => {
         const { getMount, children } = setup({ prop: 1 });
         getMount();
         expect(Subscriber.selector).toHaveBeenCalledWith(
-          basketMock.initialState,
+          StoreMock.initialState,
           { prop: 1 }
         );
         expect(children).toHaveBeenCalledWith({ foo: 1 }, actions);
@@ -174,7 +177,7 @@ describe('Subscriber', () => {
         const { getMount, children } = setup();
         const instance = getMount().instance();
         Subscriber.selector.mockReturnValue({ foo: 2 });
-        storeMock.getState.mockReturnValue({ count: 1 });
+        storeStateMock.getState.mockReturnValue({ count: 1 });
         instance.onUpdate();
         expect(children).toHaveBeenLastCalledWith({ foo: 2 }, actions);
         Subscriber.selector = undefined;
@@ -184,7 +187,7 @@ describe('Subscriber', () => {
         Subscriber.selector = jest.fn().mockReturnValue({ foo: 1 });
         const { getMount, children } = setup();
         const instance = getMount().instance();
-        storeMock.getState.mockReturnValue({ count: 1 });
+        storeStateMock.getState.mockReturnValue({ count: 1 });
         instance.onUpdate();
         expect(children).toHaveBeenCalledTimes(1);
         // check that on state change memoisation breaks
@@ -196,7 +199,7 @@ describe('Subscriber', () => {
         Subscriber.selector = null;
         const { getMount, children } = setup();
         const instance = getMount().instance();
-        storeMock.getState.mockReturnValue({ count: 1 });
+        storeStateMock.getState.mockReturnValue({ count: 1 });
         instance.onUpdate();
         expect(children).toHaveBeenCalledTimes(1);
         expect(children).toHaveBeenCalledWith({}, actions);

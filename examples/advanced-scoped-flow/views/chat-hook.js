@@ -1,9 +1,9 @@
 // @flow
 import React from 'react';
 
-import { FormContainer, useForm } from './components/form';
-import { useMessages } from './components/messages';
-import { ThemeContainer, useTheme } from './components/theme';
+import { FormContainer, useForm } from '../components/form';
+import { useMessages } from '../components/messages';
+import { ThemeContainer, useTheme } from '../components/theme';
 
 const ThemeWrapper = ({ children }: any) => {
   const [{ color }, { change }] = useTheme();

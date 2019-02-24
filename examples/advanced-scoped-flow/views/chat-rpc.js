@@ -1,9 +1,9 @@
 // @flow
 import React, { Component } from 'react';
 
-import { FormSubscriber, FormContainer } from './components/form';
-import { MessagesSubscriber } from './components/messages';
-import { ThemeContainer, ThemeSubscriber } from './components/theme';
+import { FormSubscriber, FormContainer } from '../components/form';
+import { MessagesSubscriber } from '../components/messages';
+import { ThemeContainer, ThemeSubscriber } from '../components/theme';
 
 export class ChatRpc extends Component<{
   id: string,

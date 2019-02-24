@@ -3,34 +3,35 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 
-import { basketMock, storeMock } from '../../__tests__/mocks';
-import BasketRegistry, {
+import { StoreMock, storeStateMock } from '../../__tests__/mocks';
+import StoreRegistry, {
   defaultRegistry,
   default as registryDefaultExport,
-} from '../../registry';
-import { createStore, createContainer, createSubscriber } from '../creators';
+} from '../../store/registry';
+import { createStore } from '../../store';
+import { createContainer, createSubscriber } from '../creators';
 
 const mockRegistry = {
   configure: jest.fn(),
-  getBasket: jest.fn(),
-  deleteBasket: jest.fn(),
+  getStore: jest.fn(),
+  deleteStore: jest.fn(),
 };
 
-jest.mock('../../registry', () => ({
+jest.mock('../../store/registry', () => ({
   __esModule: true,
   default: jest.fn(),
   defaultRegistry: {
     configure: jest.fn(),
-    getBasket: jest.fn(),
-    deleteBasket: jest.fn(),
+    getStore: jest.fn(),
+    deleteStore: jest.fn(),
   },
 }));
 
 const mockOnContainerInitInner = jest.fn();
 const mockOnContainerUpdateInner = jest.fn();
 const Store = createStore({
-  initialState: basketMock.initialState,
-  actions: basketMock.actions,
+  initialState: StoreMock.initialState,
+  actions: StoreMock.actions,
 });
 const Container = createContainer(Store, {
   onInit: () => mockOnContainerInitInner,
@@ -39,26 +40,26 @@ const Container = createContainer(Store, {
 
 describe('Container', () => {
   beforeEach(() => {
-    const getBasketReturn = {
-      store: storeMock,
-      actions: basketMock.actions,
+    const getStoreReturn = {
+      storeState: storeStateMock,
+      actions: StoreMock.actions,
     };
-    defaultRegistry.getBasket.mockReturnValue(getBasketReturn);
+    defaultRegistry.getStore.mockReturnValue(getStoreReturn);
     registryDefaultExport.mockImplementation(() => mockRegistry);
-    mockRegistry.getBasket.mockReturnValue(getBasketReturn);
-    storeMock.getState.mockReturnValue(basketMock.initialState);
+    mockRegistry.getStore.mockReturnValue(getStoreReturn);
+    storeStateMock.getState.mockReturnValue(StoreMock.initialState);
   });
 
   describe('constructor', () => {
-    it('should create local basket registry', () => {
-      expect(BasketRegistry).not.toHaveBeenCalled();
+    it('should create local store registry', () => {
+      expect(StoreRegistry).not.toHaveBeenCalled();
       shallow(
         <Container>
           <div />
         </Container>
       );
 
-      expect(BasketRegistry).toHaveBeenCalledWith('__local__');
+      expect(StoreRegistry).toHaveBeenCalledWith('__local__');
     });
   });
 
@@ -70,7 +71,7 @@ describe('Container', () => {
       expect(wrapper.props()).toEqual({
         children,
         value: {
-          getBasket: expect.any(Function),
+          getStore: expect.any(Function),
           globalRegistry: expect.any(Object),
         },
       });
@@ -78,18 +79,18 @@ describe('Container', () => {
   });
 
   describe('integration', () => {
-    it('should get basket from global with scope id if matching', () => {
+    it('should get storeState from global with scope id if matching', () => {
       const Subscriber = createSubscriber(Store);
       const children = <Subscriber>{() => null}</Subscriber>;
       const wrapper = mount(<Container scope="s1">{children}</Container>);
-      expect(defaultRegistry.getBasket).toHaveBeenCalledWith(
-        Subscriber.basketType,
+      expect(defaultRegistry.getStore).toHaveBeenCalledWith(
+        Subscriber.storeType,
         's1'
       );
-      expect(wrapper.instance().registry.getBasket).not.toHaveBeenCalled();
+      expect(wrapper.instance().registry.getStore).not.toHaveBeenCalled();
     });
 
-    it('should get closer basket with scope id if matching', () => {
+    it('should get closer storeState with scope id if matching', () => {
       const Subscriber = createSubscriber(Store);
       const children = <Subscriber>{() => null}</Subscriber>;
       const OtherStore = createStore({
@@ -106,71 +107,71 @@ describe('Container', () => {
           </Container>
         </Container>
       );
-      expect(defaultRegistry.getBasket).toHaveBeenCalledWith(
-        Subscriber.basketType,
+      expect(defaultRegistry.getStore).toHaveBeenCalledWith(
+        Subscriber.storeType,
         's2'
       );
     });
 
-    it('should get local basket if local matching', () => {
+    it('should get local storeState if local matching', () => {
       const Subscriber = createSubscriber(Store);
       const children = <Subscriber>{() => null}</Subscriber>;
       const wrapper = mount(<Container>{children}</Container>);
-      expect(wrapper.instance().registry.getBasket).toHaveBeenCalledWith(
-        Subscriber.basketType,
+      expect(wrapper.instance().registry.getStore).toHaveBeenCalledWith(
+        Subscriber.storeType,
         undefined
       );
-      expect(defaultRegistry.getBasket).not.toHaveBeenCalled();
+      expect(defaultRegistry.getStore).not.toHaveBeenCalled();
     });
 
-    it('should get basket from global registry when isGlobal is set', () => {
+    it('should get storeState from global registry when isGlobal is set', () => {
       const Subscriber = createSubscriber(Store);
       const children = <Subscriber>{() => null}</Subscriber>;
       const wrapper = mount(<Container isGlobal>{children}</Container>);
-      expect(defaultRegistry.getBasket).toHaveBeenCalledWith(
-        Subscriber.basketType,
+      expect(defaultRegistry.getStore).toHaveBeenCalledWith(
+        Subscriber.storeType,
         undefined
       );
-      expect(wrapper.instance().registry.getBasket).not.toHaveBeenCalled();
+      expect(wrapper.instance().registry.getStore).not.toHaveBeenCalled();
     });
 
     it('should cleanup from global on unmount if no more listeners', () => {
-      storeMock.subscribe.mockReturnValue(jest.fn());
-      storeMock.listeners.mockReturnValue([]);
+      storeStateMock.subscribe.mockReturnValue(jest.fn());
+      storeStateMock.listeners.mockReturnValue([]);
       const Subscriber = createSubscriber(Store);
       const children = <Subscriber>{() => null}</Subscriber>;
       const wrapper = mount(<Container scope="s1">{children}</Container>);
       wrapper.unmount();
-      expect(defaultRegistry.deleteBasket).toHaveBeenCalledWith(
-        Subscriber.basketType,
+      expect(defaultRegistry.deleteStore).toHaveBeenCalledWith(
+        Subscriber.storeType,
         's1'
       );
     });
 
     it('should not cleanup from global on unmount if still listeners', () => {
-      storeMock.subscribe.mockReturnValue(jest.fn());
-      storeMock.listeners.mockReturnValue([jest.fn()]);
+      storeStateMock.subscribe.mockReturnValue(jest.fn());
+      storeStateMock.listeners.mockReturnValue([jest.fn()]);
       const Subscriber = createSubscriber(Store);
       const children = <Subscriber>{() => null}</Subscriber>;
       const wrapper = mount(<Container scope="s1">{children}</Container>);
       wrapper.unmount();
-      expect(defaultRegistry.deleteBasket).not.toHaveBeenCalled();
+      expect(defaultRegistry.deleteStore).not.toHaveBeenCalled();
     });
 
     it('should cleanup from global on id change if no more listeners', () => {
-      storeMock.subscribe.mockReturnValue(jest.fn());
-      storeMock.listeners.mockReturnValue([]);
+      storeStateMock.subscribe.mockReturnValue(jest.fn());
+      storeStateMock.listeners.mockReturnValue([]);
       const Subscriber = createSubscriber(Store);
       const children = <Subscriber>{() => null}</Subscriber>;
       const wrapper = mount(<Container scope="s1">{children}</Container>);
       wrapper.setProps({ scope: 's2' });
-      expect(defaultRegistry.deleteBasket).toHaveBeenCalledWith(
-        Subscriber.basketType,
+      expect(defaultRegistry.deleteStore).toHaveBeenCalledWith(
+        Subscriber.storeType,
         's1'
       );
     });
 
-    it('should call basket onContainerInit on first render', () => {
+    it('should call Container onInit on first render', () => {
       const Subscriber = createSubscriber(Store);
       const renderPropChildren = jest.fn().mockReturnValue(null);
       const children = <Subscriber>{renderPropChildren}</Subscriber>;
@@ -188,7 +189,7 @@ describe('Container', () => {
       expect(mockOnContainerUpdateInner).not.toHaveBeenCalled();
     });
 
-    it('should call basket onContainerUpdate on re-render if props changed', () => {
+    it('should call Container onUpdate on re-render if props changed', () => {
       const Subscriber = createSubscriber(Store);
       const renderPropChildren = jest.fn().mockReturnValue(null);
       const children = <Subscriber>{renderPropChildren}</Subscriber>;
@@ -208,7 +209,7 @@ describe('Container', () => {
 
     it('should pass props to subscriber actions', () => {
       const actionInner = jest.fn();
-      basketMock.actions.increase.mockReturnValue(actionInner);
+      StoreMock.actions.increase.mockReturnValue(actionInner);
       const Subscriber = createSubscriber(Store);
       const renderPropChildren = jest.fn().mockReturnValue(null);
       const children = <Subscriber>{renderPropChildren}</Subscriber>;
@@ -228,7 +229,7 @@ describe('Container', () => {
 
     it('should pass fresh props to subscriber actions when they change', () => {
       const actionInner = jest.fn();
-      basketMock.actions.increase.mockReturnValue(actionInner);
+      StoreMock.actions.increase.mockReturnValue(actionInner);
       const Subscriber = createSubscriber(Store);
       const renderPropChildren = jest.fn().mockReturnValue(null);
       const children = <Subscriber>{renderPropChildren}</Subscriber>;

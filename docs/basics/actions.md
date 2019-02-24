@@ -52,7 +52,7 @@ dispatch(actions.increment(2));
 
 ### Async actions
 
-Like [redux-thunk](https://github.com/reduxjs/redux-thunk), basket actions can be async and you can call `setState` as many time as you need. Please note that changes to the state are applied immediately, so you should always use `getState` to query for a value. If you cache in a variable the result of `getState` you might accidentally use stale data.
+Like [redux-thunk](https://github.com/reduxjs/redux-thunk), store actions can be async and you can call `setState` as many time as you need. Please note that changes to the state are applied immediately, so you should always use `getState` to query for a value. If you cache in a variable the result of `getState` you might accidentally use stale data.
 
 ```js
 const actions = {

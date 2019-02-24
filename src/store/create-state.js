@@ -1,11 +1,11 @@
-import applyMiddleware from './middlewares';
-import withDevtools from './enhancers/devtools';
-import defaults from './defaults';
+import applyMiddleware from '../middlewares';
+import withDevtools from '../enhancers/devtools';
+import defaults from '../defaults';
 
-function createStore(key, initialState) {
+function createStoreState(key, initialState) {
   let listeners = [];
   let currentState = initialState;
-  const store = {
+  const storeState = {
     key,
     getState() {
       return currentState;
@@ -26,8 +26,8 @@ function createStore(key, initialState) {
       return listeners;
     },
   };
-  store.mutator = applyMiddleware(store, defaults.middlewares);
-  return store;
+  storeState.mutator = applyMiddleware(storeState, defaults.middlewares);
+  return storeState;
 }
 
-export default withDevtools(createStore);
+export default withDevtools(createStoreState);

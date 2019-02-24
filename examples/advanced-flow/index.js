@@ -3,17 +3,17 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { defaults, type Middleware } from 'react-adone';
 
-import { UserListRpc, UserListHook } from './components/user-list';
-import { TodoListRpc, TodoListHook } from './components/todo-list';
+import { UserListRpc, UserListHook } from './views/user-list';
+import { TodoListRpc, TodoListHook } from './views/todo-list';
 
 /**
  * Add simple logger middleware
  */
-const mw: Middleware = store => next => arg => {
+const mw: Middleware = storeState => next => arg => {
   /* eslint-disable no-console */
-  console.log(store.key, 'changing', arg);
+  console.log(storeState.key, 'changing', arg);
   const result = next(arg);
-  console.log(store.key, 'changed');
+  console.log(storeState.key, 'changed');
   return result;
 };
 defaults.middlewares.add(mw);
