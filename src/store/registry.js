@@ -15,7 +15,7 @@ export default class StoreRegistry {
     this.initialStates = initialStates;
   };
 
-  initStore = (key, Store) => {
+  initStore = (Store, key) => {
     const { initialState, actions } = Store;
     const injectedState = this.initialStates[key];
     const storeState = createStoreState(key, injectedState || initialState);
@@ -28,7 +28,7 @@ export default class StoreRegistry {
 
   getStore = (Store, scopeId = this.defaultScope) => {
     const key = this.generateKey(Store, scopeId);
-    return this.stores.get(key) || this.initStore(key, Store);
+    return this.stores.get(key) || this.initStore(Store, key);
   };
 
   deleteStore = (Store, scopeId = this.defaultScope) => {

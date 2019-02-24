@@ -49,7 +49,7 @@ declare export class Registry {
     initialStates?: { [key: string]: Object },
   }) => void;
   stores: Map<string, StoreInstance<any, any>>;
-  initStore: <ST, AC>(key: string, Store<ST, AC>) => StoreInstance<ST, AC>;
+  initStore: <ST, AC>(Store<ST, AC>, key: string) => StoreInstance<ST, AC>;
   getStore: <ST, AC>(Store<ST, AC>, scopeId: string) => StoreInstance<ST, AC>;
   deleteStore: <ST, AC>(Store<ST, AC>, scopeId: string) => void;
 }
