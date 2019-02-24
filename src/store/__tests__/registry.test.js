@@ -60,6 +60,17 @@ describe('StoreRegistry', () => {
     expect(registry.stores.size).toEqual(1);
   });
 
+  it('should export store states', () => {
+    const registry = new StoreRegistry();
+    registry.getStore(StoreMock);
+    registry.getStore(StoreMock, 's1');
+    const states = registry.getStates();
+    expect(states).toEqual({
+      'store-key@__global__': { count: 0 },
+      'store-key@s1': { count: 0 },
+    });
+  });
+
   describe('Store keys', () => {
     it('should suffix defaultScope ctor arg for unscoped stores', () => {
       const registry = new StoreRegistry('__local__');

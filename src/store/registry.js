@@ -37,6 +37,14 @@ export default class StoreRegistry {
   };
 
   generateKey = (Store, scopeId) => `${Store.key.join('__')}@${scopeId}`;
+
+  getStates = () => {
+    const output = {};
+    this.stores.forEach(({ storeState }, key) => {
+      output[key] = storeState.getState();
+    });
+    return output;
+  };
 }
 
 export const defaultRegistry = new StoreRegistry();
