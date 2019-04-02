@@ -15,6 +15,9 @@ function createStoreState(key, initialState) {
       // warn: listeners might mutate while looping
       listeners.forEach(listener => listener(currentState));
     },
+    resetState() {
+      storeState.setState(initialState);
+    },
     subscribe(listener) {
       listeners.push(listener);
       return function unsubscribe() {
