@@ -1,4 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  useState,
+  useLayoutEffect,
+  useEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import { readContext } from '../context';
 import memoize from '../utils/memoize';
 import shallowEqual from '../utils/shallow-equal';
@@ -6,7 +12,12 @@ import shallowEqual from '../utils/shallow-equal';
 const EMPTY_SELECTOR = () => undefined;
 const DEFAULT_SELECTOR = state => state;
 
-export function createHook(Store, selector) {
+// As we want to subscribe ASAP and useEffect happens on next tick, but
+// React currently throws a warning when using useLayoutEffect on the server
+const useIsomorphicLayoutEffect =
+  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
+export function createHook(Store, { selector } = {}) {
   return function(props) {
     // instead of using "useContext" we get the context value with
     // a custom implementation so our components do not render on ctx change
@@ -42,7 +53,7 @@ export function createHook(Store, selector) {
       setState(currentState);
     }
 
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
       // we call the current ref fn so state is fresh
       const onUpdate = (...args) => onUpdateRef.current(...args);
       // after component is mounted or store changed, we subscribe

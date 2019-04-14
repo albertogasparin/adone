@@ -155,5 +155,7 @@ declare export function createHook<ST, AC>(
 
 declare export function createHook<ST, AC, SE, PR>(
   store: Store<ST, AC>,
-  selector: null | ((state: ST, props: PR) => SE)
-): () => [SE, AC];
+  options: {|
+    selector: null | ((state: ST, props: PR) => SE),
+  |}
+): (props?: PR) => [SE, AC];

@@ -45,5 +45,5 @@ export const useUser = createHook<State, Actions>(Store);
 
 export const useUserSelected = createHook<*, *, UserSelectedState, {||}>(
   Store,
-  selectors.getSelected
+  { selector: selectors.getSelected }
 );

@@ -1,12 +1,9 @@
 import defaults from '../defaults';
 
-const createNamedMutator = (storeState, actionName) =>
-  defaults.devtools
-    ? arg => {
-        storeState.mutator.actionName = actionName;
-        return storeState.mutator(arg);
-      }
-    : storeState.mutator;
+const namedMutator = (storeState, actionName) => (...arg) => {
+  storeState.mutator.actionName = actionName;
+  return storeState.mutator(...arg);
+};
 
 export const bindAction = (
   storeState,
@@ -19,7 +16,9 @@ export const bindAction = (
   const dispatch = (thunkFn, actionName = `${actionKey}.dispatch`) =>
     thunkFn(
       {
-        setState: createNamedMutator(storeState, actionName),
+        setState: defaults.devtools
+          ? namedMutator(storeState, actionName)
+          : storeState.mutator,
         getState: storeState.getState,
         actions: otherActions,
         dispatch,

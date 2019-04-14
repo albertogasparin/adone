@@ -28,7 +28,7 @@ describe('Hook', () => {
 
   const setup = (props = {}, selector) => {
     const childrenFn = jest.fn().mockReturnValue(null);
-    const useHook = createHook(StoreMock, selector);
+    const useHook = createHook(StoreMock, { selector });
     const Subscriber = ({ children, ...p }) => {
       const [s, a] = useHook(p);
       return children(s, a);
@@ -50,12 +50,6 @@ describe('Hook', () => {
       actions: StoreMock.actions,
     });
     storeStateMock.getState.mockReturnValue(StoreMock.initialState);
-    // this is a hack to get useEffect run sync, otherwise it might not get called
-    jest.spyOn(React, 'useEffect').mockImplementation(React.useLayoutEffect);
-  });
-
-  afterEach(() => {
-    React.useEffect.mockRestore();
   });
 
   it('should get the storeState from registry', () => {

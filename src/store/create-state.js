@@ -12,14 +12,15 @@ function createStoreState(key, initialState) {
     },
     setState(nextState) {
       currentState = nextState;
-      // warn: listeners might mutate while looping
-      listeners.forEach(listener => listener(currentState));
+      for (let listener of listeners) {
+        listener(currentState);
+      }
     },
     resetState() {
       storeState.setState(initialState);
     },
     subscribe(listener) {
-      listeners.push(listener);
+      listeners = listeners.concat(listener);
       return function unsubscribe() {
         listeners = listeners.filter(fn => fn !== listener);
       };
