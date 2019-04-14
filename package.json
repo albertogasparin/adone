@@ -31,7 +31,8 @@
     "preversion": "npm run lint -s && npm run flow -s && npm run test -s",
     "prepack": "npm run preversion -s && npm run build -s",
     "docs": "docsify serve docs",
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "perf:start": "webpack-dev-server --config ./webpack.config.perf.js"
   },
   "dependencies": {},
   "peerDependencies": {
