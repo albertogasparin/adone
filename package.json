@@ -57,7 +57,7 @@
     "docsify-cli": "~4.3.0",
     "enzyme": "~3.9.0",
     "enzyme-adapter-react-16": "^1.11.2",
-    "eslint": "^5.15.2",
+    "eslint": "^6.0.0",
     "eslint-plugin-flowtype": "^3.4.2",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-react": "^7.12.4",
